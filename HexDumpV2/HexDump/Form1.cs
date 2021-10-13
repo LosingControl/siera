@@ -15,10 +15,10 @@ namespace HexDump
 {
     public partial class Form1 : Form
     {
-        static readonly OpenFileDialog openFileDialog = new OpenFileDialog();
+        readonly OpenFileDialog openFileDialog = new OpenFileDialog();
         //private bool openFile = false; Строка 61
         const int ByteInLine = 16;
-        MyScroll myScroll = new MyScroll(openFileDialog);
+        MyScroll myScroll = new MyScroll();
 
         public Form1()
         {
@@ -86,7 +86,7 @@ namespace HexDump
             {
                 myScroll.Maximum = (int)(fileStream.Length / 16); // доделать макс скрол TrueValueScrollMaximum
             }*/
-            myScroll.SetSettingScroll();
+            myScroll.SetSettingScroll(PathBox.Text);
             textBox1.Text = myScroll.Maximum.ToString();
             myScroll.Scrolling(e);
             textBox2.Text = myScroll.Value.ToString();

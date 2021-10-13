@@ -11,13 +11,7 @@ namespace HexDump
     class MyScroll : VScrollBar
     {
         VScrollBar vScroller = new VScrollBar();
-        readonly OpenFileDialog openFileDialog;
-
-        public MyScroll(OpenFileDialog openFileDialog)
-        {
-            this.openFileDialog = openFileDialog;
-        }
-
+        
         protected override void OnScroll(ScrollEventArgs se)
         {
             base.OnScroll(se);
@@ -32,9 +26,9 @@ namespace HexDump
             OnScroll(se);
         }
 
-        public void SetSettingScroll()
+        public void SetSettingScroll(string path)
         {
-            using (var fileStream = File.OpenRead(openFileDialog.FileName))
+            using (var fileStream = File.OpenRead(path))
             {
                 this.Maximum = (int)(fileStream.Length / 16);
                 this.Maximum = this.LargeChange - 1;
