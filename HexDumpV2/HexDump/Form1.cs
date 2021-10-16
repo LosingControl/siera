@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 
-//Почему нет моего скролла
-
 namespace HexDump
 {
     public partial class Form1 : Form
@@ -18,7 +16,7 @@ namespace HexDump
         readonly OpenFileDialog openFileDialog = new OpenFileDialog();
         //private bool openFile = false; Строка 61
         const int ByteInLine = 16;
-        MyScroll myScroll = new MyScroll();
+        //MyScroll myScroll = new MyScroll();
 
         public Form1()
         {
@@ -41,7 +39,7 @@ namespace HexDump
             {
                 MainHexBox.Clear();
                 PathBox.Text = openFileDialog.FileName;
-                PrintHexDump(ScrollHexBox.Value);
+                PrintHexDump(myScroll.Value);
                 //openFile = true;
             }
         }
@@ -51,6 +49,7 @@ namespace HexDump
             using (var fileStream = File.OpenRead(openFileDialog.FileName))
             {
                 fileStream.Seek((scroll_value * 16), SeekOrigin.Begin);
+
                 if (fileStream.Length > 0)
                 {
                     int count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
@@ -62,7 +61,7 @@ namespace HexDump
                     {
                         /*if (line == 17)
                             System.Diagnostics.Debugger.Break();*/
-                        long output_offset = scroll_value++ * ByteInLine;// int output_offset,мб значение скролла поменять, поделить
+                        long output_offset = scroll_value++ * ByteInLine;
 
                         strBld.Append(output_offset.ToString("X8") + ": ");
 
@@ -72,7 +71,7 @@ namespace HexDump
                                 strBld.Append(' ' + sumbol_from_file[0].ToString("X2"));
                         }
 
-                        strBld.AppendLine();
+                        strBld.AppendLine(); //тут лишняя строка в конце вывода всего хекс дампа
                     }
 
                     MainHexBox.Text = strBld.ToString();
@@ -80,17 +79,14 @@ namespace HexDump
             }
         }
 
-        private void ScrollHexBox_Scroll(object sender, ScrollEventArgs e)
+        private void myScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            /*using (var fileStream = File.OpenRead(openFileDialog.FileName))
-            {
-                myScroll.Maximum = (int)(fileStream.Length / 16); // доделать макс скрол TrueValueScrollMaximum
-            }*/
             myScroll.SetSettingScroll(PathBox.Text);
             textBox1.Text = myScroll.Maximum.ToString();
-            myScroll.Scrolling(e);
-            textBox2.Text = myScroll.Value.ToString();
-            PrintHexDump(ScrollHexBox.Value);
+            //textBox2.Text = myScroll.Value.ToString();
+            PrintHexDump(myScroll.Value);
         }
+
+        
     }
 }

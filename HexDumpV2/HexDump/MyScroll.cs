@@ -8,31 +8,51 @@ using System.Windows.Forms;
 
 namespace HexDump
 {
-    class MyScroll : VScrollBar
+    //this.ScrollHexBox.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrollHexBox_Scroll);
+    public class MyScroll : VScrollBar
     {
         VScrollBar vScroller = new VScrollBar();
-        
-        protected override void OnScroll(ScrollEventArgs se)
-        {
-            base.OnScroll(se);
-            if (se.ScrollOrientation == ScrollOrientation.VerticalScroll)
-            {
-                this.Value = se.NewValue;
-            }
-        }
+        //public event ScrollEventHandler Scroll;
 
-        public void Scrolling(ScrollEventArgs se)
-        {
-            OnScroll(se);
-        }
+        int phantomScrollPos = 0;
+        int x = 0;
+        int k = 3;
+
+        public MyScroll()
+        { }
 
         public void SetSettingScroll(string path)
         {
             using (var fileStream = File.OpenRead(path))
             {
                 this.Maximum = (int)(fileStream.Length / 16);
-                this.Maximum = this.LargeChange - 1;
+                this.Maximum -= this.LargeChange - 1;
             }
+        }
+
+        /*public void Scrolling(ScrollEventArgs se)
+        {
+            
+        }*/
+
+        protected override void OnScroll(ScrollEventArgs se)
+        {
+            //ScrollEventHandler handler = Scroll;
+           // if (handler != null)
+            //{
+              //  handler(this, se);
+                x++;
+            base.OnScroll(se);
+
+            //}
+
+            if (x > k)
+            {
+                x = 0;
+                phantomScrollPos++;
+            }
+            se.NewValue = phantomScrollPos;
+            this.Value = se.NewValue;
         }
     }
 }
