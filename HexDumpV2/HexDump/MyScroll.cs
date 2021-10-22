@@ -23,7 +23,7 @@ namespace HexDump
         public MyScroll()
         { }
 
-        public int Value
+        public new int Value
         {
             get { return ScrollPos; }
             set { ScrollPos = value; }
@@ -76,7 +76,6 @@ namespace HexDump
                     }
                     decrementClick = 0;
                 }
-                
             }
             else if (se.Type == ScrollEventType.SmallDecrement)
             {
@@ -95,7 +94,7 @@ namespace HexDump
                 decrementClick = 0;
                 /*if (Value == 6)
                     System.Diagnostics.Debugger.Break();*/
-                if (Value < Maximum)
+                if (ValueString < (Maximum * k + LargeChange - 1))// пока решил проблему максимума так
                 {
                     ValueString++;
                 }
