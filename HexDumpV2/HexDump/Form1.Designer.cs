@@ -135,7 +135,7 @@ namespace HexDump
             this.myScroll.Name = "myScroll";
             this.myScroll.Size = new System.Drawing.Size(21, 271);
             this.myScroll.TabIndex = 7;
-            this.myScroll.Value = 0;
+            this.myScroll.ScrollPos = 0;
             this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
             // 
             // textBox5

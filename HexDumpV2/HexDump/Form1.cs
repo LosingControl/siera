@@ -16,9 +16,10 @@ namespace HexDump
         readonly OpenFileDialog openFileDialog = new OpenFileDialog();
         //private bool openFile = false; Строка 61
         const int ByteInLine = 16;
+        MyHexDump hex = new MyHexDump();
         //MyScroll myScroll = new MyScroll();
         int count_strings_in_MainHexBox;
-        //string[] allArrByte;
+        string[] allArrByte;
         int x = 0;
         int k = 3;
         //int offset = 0;
@@ -38,21 +39,28 @@ namespace HexDump
             //    openFileDialog.InitialDirectory = "c:\\";
             //    openFileDialog.FileName = null;
             //}
-            foreach (Control c in Controls)
-                if (c is TextBox)
-                    ((TextBox)c).Text = null;
+            myScroll.ResetSettings();
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                myScroll.ResetSettings();
-                myScroll.Refresh();
                 MainHexBox.Clear();
+                PathBox.Clear();
                 PathBox.Text = openFileDialog.FileName;
-                PrintHexDump(myScroll.ValueString);
+                //PrintHexDump(myScroll.ValueString);
+                PrintHex();
                 //openFile = true;              
-            }      
+            }
         }
-        
+
+        private void PrintHex()
+        {
+            MainHexBox.Clear();
+            allArrByte = hex.GetHexDump(myScroll.ValueString, PathBox.Text, count_strings_in_MainHexBox);
+            foreach (var item in allArrByte)
+            {
+                MainHexBox.Text += item;
+            }
+        }
 
         private void PrintHexDump(int scroll_value)
         {
@@ -119,11 +127,12 @@ namespace HexDump
         private void MyScroll_Scroll(object sender, ScrollEventArgs e)
         {
             myScroll.SetSettingScroll(PathBox.Text, count_strings_in_MainHexBox);
-            PrintHexDump(myScroll.ValueString);
+            //PrintHexDump(myScroll.ValueString);
+            PrintHex();
             x++;
             textBox1.Text = myScroll.Maximum.ToString();
             textBox2.Text = myScroll.ValueString.ToString();
-            textBox5.Text = myScroll.Value.ToString();
+            textBox5.Text = myScroll.ScrollPos.ToString();
             textBox6.Text = myScroll.Minimum.ToString();
             //textBox4.Text = myScroll.MyValue.ToString();
             if (x > k)

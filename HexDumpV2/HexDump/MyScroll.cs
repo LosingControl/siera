@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,19 +15,20 @@ namespace HexDump
         //public event ScrollEventHandler Scroll;
 
         bool scrollUp = true;
-        int ScrollPos = 0;
+        int scrollPos = 0;
         int incrementClick = 0;
         int decrementClick = 0;
         int k = 3;
         int valueString = 0;
 
+
         public MyScroll()
         { }
 
-        public new int Value
+        public int ScrollPos
         {
-            get { return ScrollPos; }
-            set { ScrollPos = value; }
+            get { return scrollPos; }
+            set { scrollPos = value; }
         }
 
         public int ValueString 
@@ -39,7 +41,7 @@ namespace HexDump
         {
             Maximum = 100;
             Minimum = 0;
-            Value = 0;
+            ScrollPos = 0;
             ValueString = 0;
             scrollUp = true;
         }
@@ -56,51 +58,153 @@ namespace HexDump
 
         protected override void OnScroll(ScrollEventArgs se)
         {
-            if (se.Type == ScrollEventType.EndScroll)
+
+            switch (se.Type)
+            {
+                case ScrollEventType.SmallDecrement:
+                    scrollUp = false;
+                    decrementClick++;
+                    incrementClick = 0;
+
+                    if (ValueString > 0)
+                    {
+                        ValueString--;
+                    }
+                    if (ScrollPos > 0 && (decrementClick > k))
+                    {
+                        ScrollPos--;
+                        decrementClick = 0;
+                    }
+                    break;
+
+                case ScrollEventType.SmallIncrement:
+                    scrollUp = true;
+                    incrementClick++;
+                    decrementClick = 0;
+
+                    if (ValueString < (Maximum * k + LargeChange - 1))// пока решил проблему максимума так
+                    {
+                        ValueString++;
+                    }
+                    if (ScrollPos < Maximum && (incrementClick > k))
+                    {
+                        ScrollPos++;
+                        incrementClick = 0;
+                    }
+                    break;
+
+                case ScrollEventType.LargeDecrement:
+                    scrollUp = false;
+                    decrementClick++;
+                    //incrementClick = 0;
+
+                    if (ValueString > 0 && ScrollPos > 0)
+                    {
+                        ScrollPos--;
+                        ValueString -= k;
+                    }
+                    /*if (ScrollPos > 0 && (decrementClick > k))
+                    {
+                        ScrollPos--;
+                        decrementClick = 0;
+                    }*/
+                    break;
+
+                case ScrollEventType.LargeIncrement:
+                    scrollUp = true;
+                    incrementClick++;
+                    //decrementClick = 0;
+
+                    if (ValueString < (Maximum * k + LargeChange - 1) && ScrollPos < Maximum)// пока решил проблему максимума так
+                    {
+                        ScrollPos++;
+                        ValueString += k;
+                    }
+                    /*if (ScrollPos < Maximum && (incrementClick > k))
+                    {
+                        ScrollPos++;
+                        incrementClick = 0;
+                    }*/
+                    break;
+
+                case ScrollEventType.ThumbPosition:
+                    
+                    break;
+                case ScrollEventType.ThumbTrack://доделать 
+                    if (se.NewValue > se.OldValue)
+                    {
+                        ValueString++;
+                        Value++;
+                    }
+                    else if (se.NewValue < se.OldValue)
+                    {
+                        ValueString--;
+                        Value--;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("stay");
+                    }
+
+                    break;
+
+                case ScrollEventType.First:
+                    break;
+
+                case ScrollEventType.Last:
+                    break;
+
+                case ScrollEventType.EndScroll:
+                    break;
+
+                default:
+                    break;
+            }
+
+            /*if (se.Type == ScrollEventType.EndScroll)
             {
                 if (scrollUp && (incrementClick > k))
                 {
-                    if (Value < Maximum)
+                    if (ScrollPos < Maximum)
                     {
-                        Value++;
-                        //valueLine += x;
+                        ScrollPos++;
                     }
                     incrementClick = 0;
                 }
                 else if (!scrollUp && (decrementClick > k))
                 {
-                    if (Value > 0)
+                    if (ScrollPos > 0)
                     {
-                        Value--;
-                        //valueLine -= x;
+                        ScrollPos--;
                     }
                     decrementClick = 0;
                 }
             }
-            else if (se.Type == ScrollEventType.SmallDecrement)
+            else if (se.Type == ScrollEventType.SmallDecrement || se.Type == ScrollEventType.LargeDecrement)
             {
                 scrollUp = false;
                 decrementClick++;
                 incrementClick = 0;
+
                 if (ValueString > 0)
                 {
                     ValueString--;
                 }
             }
-            else if (se.Type == ScrollEventType.SmallIncrement)
+            else if (se.Type == ScrollEventType.SmallIncrement || se.Type == ScrollEventType.LargeIncrement)
             {
                 scrollUp = true;
                 incrementClick++;
                 decrementClick = 0;
-                /*if (Value == 6)
-                    System.Diagnostics.Debugger.Break();*/
+
                 if (ValueString < (Maximum * k + LargeChange - 1))// пока решил проблему максимума так
                 {
                     ValueString++;
                 }
-            }          
+            }
+            */
             base.OnScroll(se);
-            se.NewValue = Value;
+            se.NewValue = ScrollPos;
         }
     }
 }
