@@ -8,3 +8,13 @@ D:\CriptoSof\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.GenerateResource.cache
 D:\CriptoSof\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.CoreCompileInputs.cache
 D:\CriptoSof\HexDumpV2\HexDump\obj\Debug\HexDump.exe
 D:\CriptoSof\HexDumpV2\HexDump\obj\Debug\HexDump.pdb
+D:\github_rep\siera\HexDumpV2\HexDump\bin\Debug\HexDump.exe.config
+D:\github_rep\siera\HexDumpV2\HexDump\bin\Debug\HexDump.exe
+D:\github_rep\siera\HexDumpV2\HexDump\bin\Debug\HexDump.pdb
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csprojAssemblyReference.cache
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.Form1.resources
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.Properties.Resources.resources
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.GenerateResource.cache
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.CoreCompileInputs.cache
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.exe
+D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.pdb

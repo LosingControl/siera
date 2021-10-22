@@ -8,51 +8,100 @@ using System.Windows.Forms;
 
 namespace HexDump
 {
-    //this.ScrollHexBox.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrollHexBox_Scroll);
     public class MyScroll : VScrollBar
     {
-        VScrollBar vScroller = new VScrollBar();
+        //VScrollBar vScroller = new VScrollBar();
         //public event ScrollEventHandler Scroll;
 
-        int phantomScrollPos = 0;
-        int x = 0;
+        bool scrollUp = true;
+        int ScrollPos = 0;
+        int incrementClick = 0;
+        int decrementClick = 0;
         int k = 3;
+        int valueString = 0;
 
         public MyScroll()
         { }
 
-        public void SetSettingScroll(string path)
+        public int Value
+        {
+            get { return ScrollPos; }
+            set { ScrollPos = value; }
+        }
+
+        public int ValueString 
+        {
+            get { return valueString; }
+            set { valueString = value; }
+        }
+
+        public void ResetSettings()
+        {
+            Maximum = 100;
+            Minimum = 0;
+            Value = 0;
+            ValueString = 0;
+            scrollUp = true;
+        }
+
+        public void SetSettingScroll(string path, int maxLineInBox)
         {
             using (var fileStream = File.OpenRead(path))
             {
-                this.Maximum = (int)(fileStream.Length / 16);
-                this.Maximum -= this.LargeChange - 1;
+                Maximum = (int)(fileStream.Length / 16);
+                Maximum /= k;
+                Maximum -= LargeChange - 1;
             }
         }
 
-        /*public void Scrolling(ScrollEventArgs se)
-        {
-            
-        }*/
-
         protected override void OnScroll(ScrollEventArgs se)
         {
-            //ScrollEventHandler handler = Scroll;
-           // if (handler != null)
-            //{
-              //  handler(this, se);
-                x++;
-            base.OnScroll(se);
-
-            //}
-
-            if (x > k)
+            if (se.Type == ScrollEventType.EndScroll)
             {
-                x = 0;
-                phantomScrollPos++;
+                if (scrollUp && (incrementClick > k))
+                {
+                    if (Value < Maximum)
+                    {
+                        Value++;
+                        //valueLine += x;
+                    }
+                    incrementClick = 0;
+                }
+                else if (!scrollUp && (decrementClick > k))
+                {
+                    if (Value > 0)
+                    {
+                        Value--;
+                        //valueLine -= x;
+                    }
+                    decrementClick = 0;
+                }
+                
             }
-            se.NewValue = phantomScrollPos;
-            this.Value = se.NewValue;
+            else if (se.Type == ScrollEventType.SmallDecrement)
+            {
+                scrollUp = false;
+                decrementClick++;
+                incrementClick = 0;
+                if (ValueString > 0)
+                {
+                    ValueString--;
+                }
+            }
+            else if (se.Type == ScrollEventType.SmallIncrement)
+            {
+                scrollUp = true;
+                incrementClick++;
+                decrementClick = 0;
+                /*if (Value == 6)
+                    System.Diagnostics.Debugger.Break();*/
+                if (Value < Maximum)
+                {
+                    ValueString++;
+                }
+            }          
+            base.OnScroll(se);
+            se.NewValue = Value;
         }
     }
 }

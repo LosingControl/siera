@@ -17,15 +17,18 @@ namespace HexDump
         //private bool openFile = false; Строка 61
         const int ByteInLine = 16;
         //MyScroll myScroll = new MyScroll();
+        int count_strings_in_MainHexBox;
+        //string[] allArrByte;
+        int x = 0;
+        int k = 3;
+        //int offset = 0;
 
         public Form1()
         {
             InitializeComponent();
             textBox3.Text = MainHexBox.Height.ToString();
-            /*
-            ScrollHexBox.Maximum = int.MaxValue;
-            ScrollHexBox.Value = int.MaxValue;
-            textBox3.Text = ScrollHexBox.Value.ToString();*/
+            count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
+
         }
 
         private void Search_Click(object sender, EventArgs e)
@@ -35,22 +38,56 @@ namespace HexDump
             //    openFileDialog.InitialDirectory = "c:\\";
             //    openFileDialog.FileName = null;
             //}
+            foreach (Control c in Controls)
+                if (c is TextBox)
+                    ((TextBox)c).Text = null;
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                myScroll.ResetSettings();
+                myScroll.Refresh();
                 MainHexBox.Clear();
                 PathBox.Text = openFileDialog.FileName;
-                PrintHexDump(myScroll.Value);
-                //openFile = true;
-            }
+                PrintHexDump(myScroll.ValueString);
+                //openFile = true;              
+            }      
         }
+        
 
         private void PrintHexDump(int scroll_value)
         {
             using (var fileStream = File.OpenRead(openFileDialog.FileName))
             {
-                fileStream.Seek((scroll_value * 16), SeekOrigin.Begin);
+                using (BinaryReader binaryReader = new BinaryReader(fileStream))
+                {
+                    if (fileStream.Length > 0)
+                    {
+                        var strBld = new StringBuilder();
 
-                if (fileStream.Length > 0)
+                        byte[] stringFromFile = new byte[16];
+
+                        fileStream.Seek((scroll_value * 16), SeekOrigin.Begin);
+
+                        for (int line = 0; line < count_strings_in_MainHexBox; line++)
+                        {
+                            int output_offset = scroll_value++ * ByteInLine;
+                            stringFromFile = binaryReader.ReadBytes((int)stringFromFile.Length);
+
+                            for (int i = 0; i < stringFromFile.Length; i++)
+                            {
+                                if (i == 0)
+                                {
+                                    strBld.Append(output_offset.ToString("X8") + ": ");
+                                }
+                                strBld.Append(' ' + stringFromFile[i].ToString("X2"));
+                            }
+                            strBld.AppendLine();
+                        }
+                        MainHexBox.Text = strBld.ToString();
+                    }
+                }
+
+                /*if (fileStream.Length > 0)
                 {
                     int count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
 
@@ -59,8 +96,8 @@ namespace HexDump
 
                     for (int line = 0; line < count_strings_in_MainHexBox; line++)
                     {
-                        /*if (line == 17)
-                            System.Diagnostics.Debugger.Break();*/
+                        if (line == 17)
+                            System.Diagnostics.Debugger.Break();
                         long output_offset = scroll_value++ * ByteInLine;
 
                         strBld.Append(output_offset.ToString("X8") + ": ");
@@ -75,18 +112,26 @@ namespace HexDump
                     }
 
                     MainHexBox.Text = strBld.ToString();
-                }
+                }*/
             }
         }
 
-        private void myScroll_Scroll(object sender, ScrollEventArgs e)
+        private void MyScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            myScroll.SetSettingScroll(PathBox.Text);
+            myScroll.SetSettingScroll(PathBox.Text, count_strings_in_MainHexBox);
+            PrintHexDump(myScroll.ValueString);
+            x++;
             textBox1.Text = myScroll.Maximum.ToString();
-            //textBox2.Text = myScroll.Value.ToString();
-            PrintHexDump(myScroll.Value);
+            textBox2.Text = myScroll.ValueString.ToString();
+            textBox5.Text = myScroll.Value.ToString();
+            textBox6.Text = myScroll.Minimum.ToString();
+            //textBox4.Text = myScroll.MyValue.ToString();
+            if (x > k)
+            {
+                x = 0;
+                base.OnScroll(e);
+            }
+            
         }
-
-        
     }
 }
