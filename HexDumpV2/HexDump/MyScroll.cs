@@ -14,10 +14,11 @@ namespace HexDump
         //VScrollBar vScroller = new VScrollBar();
         //public event ScrollEventHandler Scroll;
 
-        bool scrollUp = true;
+        //bool scrollUp = true;
         int scrollPos = 0;
         int incrementClick = 0;
         int decrementClick = 0;
+        //int x = 0;
         int k = 3;
         int valueString = 0;
 
@@ -43,10 +44,10 @@ namespace HexDump
             Minimum = 0;
             ScrollPos = 0;
             ValueString = 0;
-            scrollUp = true;
+            //scrollUp = true;
         }
 
-        public void SetSettingScroll(string path, int maxLineInBox)
+        public void SetSettingScroll(string path)
         {
             using (var fileStream = File.OpenRead(path))
             {
@@ -62,7 +63,7 @@ namespace HexDump
             switch (se.Type)
             {
                 case ScrollEventType.SmallDecrement:
-                    scrollUp = false;
+                    //scrollUp = false;
                     decrementClick++;
                     incrementClick = 0;
 
@@ -78,7 +79,7 @@ namespace HexDump
                     break;
 
                 case ScrollEventType.SmallIncrement:
-                    scrollUp = true;
+                    //scrollUp = true;
                     incrementClick++;
                     decrementClick = 0;
 
@@ -94,7 +95,7 @@ namespace HexDump
                     break;
 
                 case ScrollEventType.LargeDecrement:
-                    scrollUp = false;
+                    //scrollUp = false;
                     decrementClick++;
                     //incrementClick = 0;
 
@@ -103,43 +104,44 @@ namespace HexDump
                         ScrollPos--;
                         ValueString -= k;
                     }
-                    /*if (ScrollPos > 0 && (decrementClick > k))
+                    if (ScrollPos > 0 && (decrementClick > k))
                     {
                         ScrollPos--;
                         decrementClick = 0;
-                    }*/
+                    }
                     break;
 
                 case ScrollEventType.LargeIncrement:
-                    scrollUp = true;
+                    //scrollUp = true;
                     incrementClick++;
                     //decrementClick = 0;
 
-                    if (ValueString < (Maximum * k + LargeChange - 1) && ScrollPos < Maximum)// пока решил проблему максимума так
+                    if (ValueString < (Maximum * k + LargeChange - 1) && ScrollPos < Maximum)
                     {
                         ScrollPos++;
                         ValueString += k;
                     }
-                    /*if (ScrollPos < Maximum && (incrementClick > k))
+                    if (ScrollPos < Maximum && (incrementClick > k))
                     {
                         ScrollPos++;
                         incrementClick = 0;
-                    }*/
+                    }
                     break;
 
                 case ScrollEventType.ThumbPosition:
-                    
+                    //Скролит после остановки Thumb
+
                     break;
-                case ScrollEventType.ThumbTrack://доделать 
+                case ScrollEventType.ThumbTrack:
                     if (se.NewValue > se.OldValue)
                     {
-                        ValueString++;
-                        Value++;
+                        ScrollPos++;
+                        ValueString += k;
                     }
                     else if (se.NewValue < se.OldValue)
                     {
-                        ValueString--;
-                        Value--;
+                        ScrollPos--;
+                        ValueString -= k;
                     }
                     else
                     {
@@ -149,9 +151,13 @@ namespace HexDump
                     break;
 
                 case ScrollEventType.First:
+                    ScrollPos = Maximum;
+                    ValueString = Maximum * k + LargeChange - 1;
                     break;
 
                 case ScrollEventType.Last:
+                    ScrollPos = Minimum;
+                    ValueString = Minimum;
                     break;
 
                 case ScrollEventType.EndScroll:

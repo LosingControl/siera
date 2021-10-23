@@ -11,7 +11,8 @@ namespace HexDump
     {
         const int ByteInLine = 16;
 
-        string[] temp = new string[20];
+        string[] arrByte;
+        StringBuilder strBld = new StringBuilder();
 
         public MyHexDump()
         { }
@@ -25,7 +26,6 @@ namespace HexDump
                 {
                     if (fileStream.Length > 0)
                     {
-                        var strBld = new StringBuilder();
 
                         byte[] stringFromFile = new byte[16];
 
@@ -44,7 +44,7 @@ namespace HexDump
                                 strBld.Append(' ' + stringFromFile[i].ToString("X2"));
                             }
                             strBld.AppendLine();
-                            temp[x] = strBld.ToString();
+                            arrByte[x] = strBld.ToString();
                             x++;
                             strBld.Clear();
                             
@@ -52,7 +52,7 @@ namespace HexDump
                     }
                 }
             }
-            return temp;
+            return arrByte;
         }
     }
 }

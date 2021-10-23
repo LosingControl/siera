@@ -54,6 +54,13 @@ namespace HexDump
 
         private void PrintHex()
         {
+
+            //идея - выводить всегда по (count_strings_in_MainHexBox + 20), когда
+            //myScroll.ValueString == (count_strings_in_MainHexBox + 20) отрисовывать
+            //в текст бокс начиная с (myScroll.ValueString + 1 или myScroll.ValueString - 1
+            //или myScroll.ValueString) пока не решил. Для этого можно создать переменную
+            //которая отслеживает (count_strings_in_MainHexBox + 20) в большую сторону и в меньшую сторону
+            //посредством - X = (count_strings_in_MainHexBox + 20) или X = -(count_strings_in_MainHexBox + 20)
             MainHexBox.Clear();
             allArrByte = hex.GetHexDump(myScroll.ValueString, PathBox.Text, count_strings_in_MainHexBox);
             foreach (var item in allArrByte)
@@ -126,7 +133,7 @@ namespace HexDump
 
         private void MyScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            myScroll.SetSettingScroll(PathBox.Text, count_strings_in_MainHexBox);
+            myScroll.SetSettingScroll(PathBox.Text);
             //PrintHexDump(myScroll.ValueString);
             PrintHex();
             x++;
