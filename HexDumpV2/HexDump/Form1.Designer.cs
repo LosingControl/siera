@@ -34,14 +34,13 @@ namespace HexDump
             this.Search = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.ScrollHexBox = new System.Windows.Forms.VScrollBar();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.myScroll = new HexDump.MyScroll();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
+            this.myScroll = new HexDump.MyScroll();
             this.SuspendLayout();
             // 
             // PathBox
@@ -89,13 +88,6 @@ namespace HexDump
             this.textBox2.Size = new System.Drawing.Size(76, 20);
             this.textBox2.TabIndex = 4;
             // 
-            // ScrollHexBox
-            // 
-            this.ScrollHexBox.Location = new System.Drawing.Point(436, 67);
-            this.ScrollHexBox.Name = "ScrollHexBox";
-            this.ScrollHexBox.Size = new System.Drawing.Size(21, 271);
-            this.ScrollHexBox.TabIndex = 5;
-            // 
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(25, 342);
@@ -129,15 +121,6 @@ namespace HexDump
             this.label2.TabIndex = 10;
             this.label2.Text = "Value";
             // 
-            // myScroll
-            // 
-            this.myScroll.Location = new System.Drawing.Point(482, 67);
-            this.myScroll.Name = "myScroll";
-            this.myScroll.Size = new System.Drawing.Size(21, 271);
-            this.myScroll.TabIndex = 7;
-            this.myScroll.ScrollPos = 0;
-            this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
-            // 
             // textBox5
             // 
             this.textBox5.Location = new System.Drawing.Point(506, 111);
@@ -152,6 +135,17 @@ namespace HexDump
             this.textBox6.Size = new System.Drawing.Size(86, 20);
             this.textBox6.TabIndex = 12;
             // 
+            // myScroll
+            // 
+            this.myScroll.Location = new System.Drawing.Point(482, 67);
+            this.myScroll.MarkerReserve = 0;
+            this.myScroll.Name = "myScroll";
+            this.myScroll.ScrollPos = 0;
+            this.myScroll.Size = new System.Drawing.Size(21, 271);
+            this.myScroll.TabIndex = 7;
+            this.myScroll.ValueString = 0;
+            this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -164,13 +158,13 @@ namespace HexDump
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.myScroll);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.ScrollHexBox);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.Search);
             this.Controls.Add(this.MainHexBox);
             this.Controls.Add(this.PathBox);
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MinimumSize = new System.Drawing.Size(616, 405);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -185,7 +179,6 @@ namespace HexDump
         private System.Windows.Forms.Button Search;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.VScrollBar ScrollHexBox;
         private System.Windows.Forms.TextBox textBox3;
         private MyScroll myScroll;
         private System.Windows.Forms.TextBox textBox4;

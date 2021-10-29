@@ -11,20 +11,23 @@ namespace HexDump
 {
     public class MyScroll : VScrollBar
     {
-        //VScrollBar vScroller = new VScrollBar();
-        //public event ScrollEventHandler Scroll;
+        const int RowRatio = 3;
 
-        //bool scrollUp = true;
         int scrollPos = 0;
         int incrementClick = 0;
         int decrementClick = 0;
-        //int x = 0;
-        int k = 3;
+        int markerReserve = 0;
         int valueString = 0;
 
 
         public MyScroll()
         { }
+
+        public int MarkerReserve
+        {
+            get { return markerReserve; }
+            set { markerReserve = value; }
+        }
 
         public int ScrollPos
         {
@@ -40,11 +43,12 @@ namespace HexDump
 
         public void ResetSettings()
         {
-            Maximum = 100;
+            Maximum = 0;
             Minimum = 0;
             ScrollPos = 0;
             ValueString = 0;
-            //scrollUp = true;
+            Value = 0;
+            MarkerReserve = 0;
         }
 
         public void SetSettingScroll(string path)
@@ -52,7 +56,7 @@ namespace HexDump
             using (var fileStream = File.OpenRead(path))
             {
                 Maximum = (int)(fileStream.Length / 16);
-                Maximum /= k;
+                Maximum /= RowRatio;
                 Maximum -= LargeChange - 1;
             }
         }
@@ -63,101 +67,40 @@ namespace HexDump
             switch (se.Type)
             {
                 case ScrollEventType.SmallDecrement:
-                    //scrollUp = false;
-                    decrementClick++;
-                    incrementClick = 0;
-
-                    if (ValueString > 0)
-                    {
-                        ValueString--;
-                    }
-                    if (ScrollPos > 0 && (decrementClick > k))
-                    {
-                        ScrollPos--;
-                        decrementClick = 0;
-                    }
+                    OnSmallDecrement();
                     break;
 
                 case ScrollEventType.SmallIncrement:
-                    //scrollUp = true;
-                    incrementClick++;
-                    decrementClick = 0;
-
-                    if (ValueString < (Maximum * k + LargeChange - 1))// пока решил проблему максимума так
-                    {
-                        ValueString++;
-                    }
-                    if (ScrollPos < Maximum && (incrementClick > k))
-                    {
-                        ScrollPos++;
-                        incrementClick = 0;
-                    }
+                    OnSmallIncrement();
                     break;
 
                 case ScrollEventType.LargeDecrement:
-                    //scrollUp = false;
-                    decrementClick++;
-                    //incrementClick = 0;
-
-                    if (ValueString > 0 && ScrollPos > 0)
-                    {
-                        ScrollPos--;
-                        ValueString -= k;
-                    }
-                    if (ScrollPos > 0 && (decrementClick > k))
-                    {
-                        ScrollPos--;
-                        decrementClick = 0;
-                    }
+                    OnLargeDecrement();
                     break;
 
                 case ScrollEventType.LargeIncrement:
-                    //scrollUp = true;
-                    incrementClick++;
-                    //decrementClick = 0;
-
-                    if (ValueString < (Maximum * k + LargeChange - 1) && ScrollPos < Maximum)
-                    {
-                        ScrollPos++;
-                        ValueString += k;
-                    }
-                    if (ScrollPos < Maximum && (incrementClick > k))
-                    {
-                        ScrollPos++;
-                        incrementClick = 0;
-                    }
+                    OnLargeIncrement();
                     break;
 
                 case ScrollEventType.ThumbPosition:
-                    //Скролит после остановки Thumb
+                    //Скролит после остановки Thumb. Ползунок полосы прокрутки переместился.
 
                     break;
                 case ScrollEventType.ThumbTrack:
-                    if (se.NewValue > se.OldValue)
-                    {
-                        ScrollPos++;
-                        ValueString += k;
-                    }
-                    else if (se.NewValue < se.OldValue)
-                    {
-                        ScrollPos--;
-                        ValueString -= k;
-                    }
-                    else
-                    {
-                        Debug.WriteLine("stay");
-                    }
-
+                    //Ползунок полосы прокрутки перемещается в данный момент.
+                    OnThumbTrack(se);
                     break;
 
                 case ScrollEventType.First:
                     ScrollPos = Maximum;
-                    ValueString = Maximum * k + LargeChange - 1;
+                    ValueString = Maximum * RowRatio + LargeChange - 1;
+                    //markerReserve = ValueString;
                     break;
 
                 case ScrollEventType.Last:
                     ScrollPos = Minimum;
                     ValueString = Minimum;
+                    //markerReserve = ValueString;
                     break;
 
                 case ScrollEventType.EndScroll:
@@ -166,51 +109,97 @@ namespace HexDump
                 default:
                     break;
             }
-
-            /*if (se.Type == ScrollEventType.EndScroll)
-            {
-                if (scrollUp && (incrementClick > k))
-                {
-                    if (ScrollPos < Maximum)
-                    {
-                        ScrollPos++;
-                    }
-                    incrementClick = 0;
-                }
-                else if (!scrollUp && (decrementClick > k))
-                {
-                    if (ScrollPos > 0)
-                    {
-                        ScrollPos--;
-                    }
-                    decrementClick = 0;
-                }
-            }
-            else if (se.Type == ScrollEventType.SmallDecrement || se.Type == ScrollEventType.LargeDecrement)
-            {
-                scrollUp = false;
-                decrementClick++;
-                incrementClick = 0;
-
-                if (ValueString > 0)
-                {
-                    ValueString--;
-                }
-            }
-            else if (se.Type == ScrollEventType.SmallIncrement || se.Type == ScrollEventType.LargeIncrement)
-            {
-                scrollUp = true;
-                incrementClick++;
-                decrementClick = 0;
-
-                if (ValueString < (Maximum * k + LargeChange - 1))// пока решил проблему максимума так
-                {
-                    ValueString++;
-                }
-            }
-            */
             base.OnScroll(se);
-            se.NewValue = ScrollPos;
+        }
+
+        private void OnThumbTrack(ScrollEventArgs se)
+        {
+            if (se.NewValue > se.OldValue)
+            {
+                ScrollPos++;
+                ValueString += RowRatio;
+                markerReserve += RowRatio;
+            }
+            else if (se.NewValue < se.OldValue)
+            {
+                ScrollPos--;
+                ValueString -= RowRatio;
+                markerReserve -= RowRatio;
+            }
+            else
+            {
+                Debug.WriteLine("stay");
+            }
+        }
+
+        private void OnLargeIncrement()
+        {
+            incrementClick++;
+
+            if (ValueString < (Maximum * RowRatio + LargeChange - 1) && ScrollPos < Maximum)
+            {
+                ScrollPos++;
+                ValueString += RowRatio;
+                markerReserve += RowRatio;
+            }
+            if (ScrollPos < Maximum && (incrementClick > RowRatio))
+            {
+                ScrollPos++;
+                incrementClick = 0;
+            }
+        }
+
+        private void OnLargeDecrement()
+        {
+            decrementClick++;
+
+            if (ValueString > 0 && ScrollPos > 0)
+            {
+                ScrollPos--;
+                ValueString -= RowRatio;
+                markerReserve -= RowRatio;
+            }
+            if (ScrollPos > 0 && (decrementClick > RowRatio))
+            {
+                ScrollPos--;
+                decrementClick = 0;
+            }
+        }
+
+        private void OnSmallIncrement()
+        {
+            incrementClick++;
+
+            decrementClick = 0;
+
+            if (ValueString < (Maximum * RowRatio + LargeChange - 1))
+            {
+                ValueString++;
+                markerReserve++;
+            }
+            if (ScrollPos < Maximum && (incrementClick > RowRatio))
+            {
+                ScrollPos++;
+                incrementClick = 0;
+            }
+        }
+
+        private void OnSmallDecrement()
+        {
+            decrementClick++;
+
+            incrementClick = 0;
+
+            if (ValueString > 0)
+            {
+                ValueString--;
+                markerReserve--;
+            }
+            if (ScrollPos > 0 && (decrementClick > RowRatio))
+            {
+                ScrollPos--;
+                decrementClick = 0;
+            }
         }
     }
 }
