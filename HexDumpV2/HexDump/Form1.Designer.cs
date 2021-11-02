@@ -45,6 +45,8 @@ namespace HexDump
             // 
             // PathBox
             // 
+            this.PathBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PathBox.Location = new System.Drawing.Point(25, 25);
             this.PathBox.Margin = new System.Windows.Forms.Padding(2);
             this.PathBox.Name = "PathBox";
@@ -53,6 +55,9 @@ namespace HexDump
             // 
             // MainHexBox
             // 
+            this.MainHexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MainHexBox.Font = new System.Drawing.Font("Consolas", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MainHexBox.Location = new System.Drawing.Point(25, 67);
             this.MainHexBox.Margin = new System.Windows.Forms.Padding(2);
@@ -63,6 +68,7 @@ namespace HexDump
             // 
             // Search
             // 
+            this.Search.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Search.Location = new System.Drawing.Point(299, 24);
             this.Search.Margin = new System.Windows.Forms.Padding(2);
             this.Search.Name = "Search";
@@ -74,6 +80,7 @@ namespace HexDump
             // 
             // textBox1
             // 
+            this.textBox1.Enabled = false;
             this.textBox1.Location = new System.Drawing.Point(516, 66);
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
@@ -82,6 +89,7 @@ namespace HexDump
             // 
             // textBox2
             // 
+            this.textBox2.Enabled = false;
             this.textBox2.Location = new System.Drawing.Point(516, 319);
             this.textBox2.Margin = new System.Windows.Forms.Padding(2);
             this.textBox2.Name = "textBox2";
@@ -98,6 +106,7 @@ namespace HexDump
             // 
             // textBox4
             // 
+            this.textBox4.Enabled = false;
             this.textBox4.Location = new System.Drawing.Point(516, 220);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(76, 20);
@@ -123,6 +132,7 @@ namespace HexDump
             // 
             // textBox5
             // 
+            this.textBox5.Enabled = false;
             this.textBox5.Location = new System.Drawing.Point(506, 111);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(86, 20);
@@ -130,6 +140,7 @@ namespace HexDump
             // 
             // textBox6
             // 
+            this.textBox6.Enabled = false;
             this.textBox6.Location = new System.Drawing.Point(506, 147);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(86, 20);
@@ -137,6 +148,8 @@ namespace HexDump
             // 
             // myScroll
             // 
+            this.myScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.myScroll.Location = new System.Drawing.Point(482, 67);
             this.myScroll.MarkerReserve = 0;
             this.myScroll.Name = "myScroll";

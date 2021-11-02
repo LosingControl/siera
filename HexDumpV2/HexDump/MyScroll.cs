@@ -1,54 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HexDump
 {
     public class MyScroll : VScrollBar
     {
-        const int RowRatio = 3;
+        const int CoefficientStrings = 3;
 
-        int scrollPos = 0;
-        int incrementClick = 0;
-        int decrementClick = 0;
-        int markerReserve = 0;
-        int valueString = 0;
+        int m_ScrollPos = 0;
+        int m_IncrementClick = 0;
+        int m_DecrementClick = 0;
+        int m_MarkerReserve = 0;
+        int m_ValueString = 0;
+        int m_ValueStringMax = 0;
+        ScrollEventArgs MyOldValue;
 
-
-        public MyScroll()
-        { }
+        public int GetCoefficientStrings
+        {
+            get => CoefficientStrings;
+        }
 
         public int MarkerReserve
         {
-            get { return markerReserve; }
-            set { markerReserve = value; }
+            get { return m_MarkerReserve; }
+            set { m_MarkerReserve = value; }
         }
 
         public int ScrollPos
         {
-            get { return scrollPos; }
-            set { scrollPos = value; }
+            get { return m_ScrollPos; }
+            set { m_ScrollPos = value; }
         }
 
-        public int ValueString 
+        public int ValueString
         {
-            get { return valueString; }
-            set { valueString = value; }
+            get { return m_ValueString; }
+            set { m_ValueString = value; }
         }
+
+        public int ValueStringMax { get => m_ValueStringMax; private set => m_ValueStringMax = value; }
+
+        public MyScroll()
+        { }
 
         public void ResetSettings()
         {
             Maximum = 0;
             Minimum = 0;
-            ScrollPos = 0;
-            ValueString = 0;
-            Value = 0;
-            MarkerReserve = 0;
+            m_ScrollPos = 0;
+            m_ValueString = 0;
+            base.Value = 0;
+            m_MarkerReserve = 0;
         }
 
         public void SetSettingScroll(string path)
@@ -56,14 +59,14 @@ namespace HexDump
             using (var fileStream = File.OpenRead(path))
             {
                 Maximum = (int)(fileStream.Length / 16);
-                Maximum /= RowRatio;
+                Maximum /= CoefficientStrings;
                 Maximum -= LargeChange - 1;
+                m_ValueStringMax = Maximum * CoefficientStrings + LargeChange - 1;
             }
         }
 
         protected override void OnScroll(ScrollEventArgs se)
         {
-
             switch (se.Type)
             {
                 case ScrollEventType.SmallDecrement:
@@ -84,7 +87,7 @@ namespace HexDump
 
                 case ScrollEventType.ThumbPosition:
                     //Скролит после остановки Thumb. Ползунок полосы прокрутки переместился.
-
+                    Debug.WriteLine("Down Arrow Captured");
                     break;
                 case ScrollEventType.ThumbTrack:
                     //Ползунок полосы прокрутки перемещается в данный момент.
@@ -92,39 +95,63 @@ namespace HexDump
                     break;
 
                 case ScrollEventType.First:
-                    ScrollPos = Maximum;
-                    ValueString = Maximum * RowRatio + LargeChange - 1;
+                    OnFirst();
                     //markerReserve = ValueString;
                     break;
 
                 case ScrollEventType.Last:
-                    ScrollPos = Minimum;
-                    ValueString = Minimum;
+                    OnLast();
                     //markerReserve = ValueString;
                     break;
 
                 case ScrollEventType.EndScroll:
+                    
                     break;
 
                 default:
                     break;
             }
+            se.NewValue = m_ScrollPos;
             base.OnScroll(se);
+        }
+
+        public void OnScrolled(ScrollEventArgs se)
+        {
+            OnScroll(se);
+        }
+
+        public void OnPressingControlButton(ScrollEventArgs se)
+        {
+            OnScroll(se);
+        }
+
+        private void OnFirst()
+        {
+            m_ScrollPos = Minimum;
+            m_ValueString = Minimum;
+            m_MarkerReserve = Minimum;
+        }
+
+        private void OnLast()
+        {
+            m_ScrollPos = Maximum;
+            m_ValueString = m_ValueStringMax;
+            m_MarkerReserve = m_ValueStringMax;
         }
 
         private void OnThumbTrack(ScrollEventArgs se)
         {
             if (se.NewValue > se.OldValue)
             {
-                ScrollPos++;
-                ValueString += RowRatio;
-                markerReserve += RowRatio;
+                m_ScrollPos++;
+                m_ValueString += CoefficientStrings;
+                m_MarkerReserve += CoefficientStrings;
             }
             else if (se.NewValue < se.OldValue)
             {
-                ScrollPos--;
-                ValueString -= RowRatio;
-                markerReserve -= RowRatio;
+                m_ScrollPos--;
+                m_ValueString -= CoefficientStrings;
+                m_MarkerReserve -= CoefficientStrings;
             }
             else
             {
@@ -134,71 +161,69 @@ namespace HexDump
 
         private void OnLargeIncrement()
         {
-            incrementClick++;
+            m_IncrementClick++;
 
-            if (ValueString < (Maximum * RowRatio + LargeChange - 1) && ScrollPos < Maximum)
+            if (m_ValueString < m_ValueStringMax && m_ScrollPos < Maximum)
             {
-                ScrollPos++;
-                ValueString += RowRatio;
-                markerReserve += RowRatio;
+                m_ScrollPos++;
+                m_ValueString += CoefficientStrings;
+                m_MarkerReserve += CoefficientStrings;
             }
-            if (ScrollPos < Maximum && (incrementClick > RowRatio))
+            if (m_IncrementClick > CoefficientStrings)
             {
-                ScrollPos++;
-                incrementClick = 0;
+                m_IncrementClick = 0;
             }
         }
 
         private void OnLargeDecrement()
         {
-            decrementClick++;
+            m_DecrementClick++;
 
-            if (ValueString > 0 && ScrollPos > 0)
+            if (m_ValueString > 0 && m_ScrollPos > 0)
             {
-                ScrollPos--;
-                ValueString -= RowRatio;
-                markerReserve -= RowRatio;
+                m_ScrollPos--;
+                m_ValueString -= CoefficientStrings;
+                m_MarkerReserve -= CoefficientStrings;
             }
-            if (ScrollPos > 0 && (decrementClick > RowRatio))
+            if (m_DecrementClick > CoefficientStrings)
             {
-                ScrollPos--;
-                decrementClick = 0;
+                m_DecrementClick = 0;
             }
         }
 
         private void OnSmallIncrement()
         {
-            incrementClick++;
+            m_IncrementClick++;
 
-            decrementClick = 0;
+            m_DecrementClick = 0;
 
-            if (ValueString < (Maximum * RowRatio + LargeChange - 1))
+            if (m_ValueString < m_ValueStringMax)
             {
-                ValueString++;
-                markerReserve++;
+                m_ValueString++;
+                m_MarkerReserve++;
             }
-            if (ScrollPos < Maximum && (incrementClick > RowRatio))
+            if (m_ScrollPos < Maximum && (m_IncrementClick >= CoefficientStrings))
             {
-                ScrollPos++;
-                incrementClick = 0;
+                m_ScrollPos++;
+                m_IncrementClick = 0;
             }
         }
 
         private void OnSmallDecrement()
         {
-            decrementClick++;
+            m_DecrementClick++;
 
-            incrementClick = 0;
+            m_IncrementClick = 0;
 
-            if (ValueString > 0)
+            if (m_ValueString > 0)
             {
-                ValueString--;
-                markerReserve--;
+                m_ValueString--;
+                m_MarkerReserve--;
             }
-            if (ScrollPos > 0 && (decrementClick > RowRatio))
+            if (m_ScrollPos > 0 && (m_DecrementClick >= CoefficientStrings))
             {
-                ScrollPos--;
-                decrementClick = 0;
+                m_ScrollPos--;
+                m_DecrementClick = 0;
             }
         }
     }

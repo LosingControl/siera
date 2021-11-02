@@ -11,11 +11,15 @@ namespace HexDump
     {
         const int ByteInLine = 16;
         const int MaximumReadBytes = 4194304;
-        string[] arrByte;
-        bool rereadPointer;
-        readonly StringBuilder strBld = new StringBuilder();
+        const int LimitStock = MaximumReadBytes / ByteInLine;
+        
 
-        public bool RereadPointer { get => rereadPointer; set => rereadPointer = value; }
+        readonly StringBuilder m_StrBldHexDump = new StringBuilder();
+
+        string[] arrByte;
+        bool readingPoint;
+        
+        public bool RereadPointer { get => readingPoint; set => readingPoint = value; }
 
         public MyHexDump()
         { }
@@ -24,14 +28,14 @@ namespace HexDump
         {
             int x = 0;
 
-            if (Math.Abs(markerReserve) == MaximumReadBytes / ByteInLine)
+            if (markerReserve == LimitStock)
             {
-                rereadPointer = true;
+                readingPoint = true;
             }
 
-            if (rereadPointer)
+            if (readingPoint)
             {
-                rereadPointer = false;
+                readingPoint = false;
                 SetSizeArray(ref path);
                 GetStringsByte(ref scroll_value, ref x, ref path);
             }
@@ -76,19 +80,19 @@ namespace HexDump
 
                                 if (i == 0)
                                 {
-                                    strBld.Append(output_offset.ToString("X8") + ": ");
+                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");
                                 }
 
-                                strBld.Append(' ' + stringFromFile[i].ToString("X2"));
+                                m_StrBldHexDump.Append(' ' + stringFromFile[i].ToString("X2"));
                             }
 
-                            strBld.AppendLine();
+                            m_StrBldHexDump.AppendLine();
 
-                            arrByte[x] = strBld.ToString();
+                            arrByte[x] = m_StrBldHexDump.ToString();
 
                             x++;
 
-                            strBld.Clear();
+                            m_StrBldHexDump.Clear();
                         }
                     }
                 }
