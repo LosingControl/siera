@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -14,7 +15,7 @@ namespace HexDump
         int m_MarkerReserve = 0;
         int m_ValueString = 0;
         int m_ValueStringMax = 0;
-        ScrollEventArgs MyOldValue;
+
 
         public int GetCoefficientStrings
         {
@@ -58,8 +59,8 @@ namespace HexDump
         {
             using (var fileStream = File.OpenRead(path))
             {
-                Maximum = (int)(fileStream.Length / 16);
-                Maximum /= CoefficientStrings;
+                Maximum = (int)Math.Ceiling((decimal)(fileStream.Length / 16));
+                Maximum = (int)Math.Round((decimal)Maximum / CoefficientStrings);
                 Maximum -= LargeChange - 1;
                 m_ValueStringMax = Maximum * CoefficientStrings + LargeChange - 1;
             }
@@ -115,11 +116,6 @@ namespace HexDump
             base.OnScroll(se);
         }
 
-        public void OnScrolled(ScrollEventArgs se)
-        {
-            OnScroll(se);
-        }
-
         public void OnPressingControlButton(ScrollEventArgs se)
         {
             OnScroll(se);
@@ -141,17 +137,20 @@ namespace HexDump
 
         private void OnThumbTrack(ScrollEventArgs se)
         {
-            if (se.NewValue > se.OldValue)
+            //переделать , проблемы с использованием smallIncremet и скролла без фокуса
+            if (se.NewValue > se.OldValue /*&& m_ScrollPos < Maximum*/)
             {
-                m_ScrollPos++;
+                OnSmallIncrement();
+                /*m_ScrollPos++;
                 m_ValueString += CoefficientStrings;
-                m_MarkerReserve += CoefficientStrings;
+                m_MarkerReserve += CoefficientStrings;*/
             }
-            else if (se.NewValue < se.OldValue)
+            else if (se.NewValue < se.OldValue /*&& m_ScrollPos > Minimum*/)
             {
-                m_ScrollPos--;
+                OnSmallDecrement();
+                /*m_ScrollPos--;
                 m_ValueString -= CoefficientStrings;
-                m_MarkerReserve -= CoefficientStrings;
+                m_MarkerReserve -= CoefficientStrings;*/
             }
             else
             {

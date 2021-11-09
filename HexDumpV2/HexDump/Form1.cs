@@ -34,6 +34,7 @@ namespace HexDump
         const int ByteInLine = 16;
         int count_strings_in_MainHexBox;*/
         string[] allArrByte;
+        int CountElem = 0;
         int m_CountClickOnScroll = 0;
         
 
@@ -41,6 +42,7 @@ namespace HexDump
         {
             InitializeComponent();
             textBox3.Text = MainHexBox.Height.ToString();
+            BoxCountElem.Text = CountElem.ToString();   
             //count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
         }
 
@@ -100,14 +102,47 @@ namespace HexDump
             }
         }
 
+        internal static class NativeMethods
+        {
+            internal static ushort HIWORD(IntPtr dwValue)
+            {
+                return (ushort)((((long)dwValue) >> 0x10) & 0xffff);
+            }
+
+            internal static ushort HIWORD(uint dwValue)
+            {
+                return (ushort)(dwValue >> 0x10);
+            }
+
+            internal static int GET_WHEEL_DELTA_WPARAM(IntPtr wParam)
+            {
+                return (short)HIWORD(wParam);
+            }
+
+            internal static int GET_WHEEL_DELTA_WPARAM(uint wParam)
+            {
+                return (short)HIWORD(wParam);
+            }
+        }
+
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
+            
             if (m.Msg == WmMouseWheel)
             {
-                //ScrollEventArgs se = new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.OldValue, );
-                Debug.WriteLine("MouseWheel");
-                //myScroll.OnScrolled(se);
+                int zDelta = NativeMethods.GET_WHEEL_DELTA_WPARAM(m.WParam);
+                ScrollEventArgs se;
+
+                if (zDelta > 0)
+                {
+                    se =  new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.ValueString + 1, myScroll.ValueString);
+                }
+                else
+                {
+                    se = new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.ValueString - 1, myScroll.ValueString);
+                }
+                myScroll.OnPressingControlButton(se);
             }
         }
 
@@ -151,5 +186,25 @@ namespace HexDump
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        private void IncrementElem_Click(object sender, EventArgs e)
+        {
+            BoxCountElem.Text = (Convert.ToInt32(BoxCountElem.Text) + 1).ToString();
+            Button n = (Button)sender;
+            Button temp = new Button();
+            temp.Width = n.Width;
+            temp.Name = string.Format("newTextBox{0}", BoxCountElem.Text);
+            temp.Location = new Point(n.Location.X + n.Width + 10, n.Location.Y);
+            //temp.Click += new EventHandler(IncrementElem_Click);
+            Controls.Add(temp);           
+        }
+
+        private void DecrementElem_Click(object sender, EventArgs e)
+        {
+            if (Convert.ToInt32(BoxCountElem.Text) > 0)
+            {
+                Controls.RemoveByKey(string.Format("newTextBox{0}", BoxCountElem.Text));
+                BoxCountElem.Text = (Convert.ToInt32(BoxCountElem.Text) - 1).ToString();
+            }
+        }
     }
 }

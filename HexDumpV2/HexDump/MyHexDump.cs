@@ -12,7 +12,6 @@ namespace HexDump
         const int ByteInLine = 16;
         const int MaximumReadBytes = 4194304;
         const int LimitStock = MaximumReadBytes / ByteInLine;
-        
 
         readonly StringBuilder m_StrBldHexDump = new StringBuilder();
 
@@ -80,7 +79,7 @@ namespace HexDump
 
                                 if (i == 0)
                                 {
-                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");
+                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");//смещение модет быть и в Х16
                                 }
 
                                 m_StrBldHexDump.Append(' ' + stringFromFile[i].ToString("X2"));

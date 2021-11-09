@@ -40,6 +40,9 @@ namespace HexDump
             this.label2 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
+            this.BoxCountElem = new System.Windows.Forms.TextBox();
+            this.IncrementElem = new System.Windows.Forms.Button();
+            this.DecrementElem = new System.Windows.Forms.Button();
             this.myScroll = new HexDump.MyScroll();
             this.SuspendLayout();
             // 
@@ -146,6 +149,33 @@ namespace HexDump
             this.textBox6.Size = new System.Drawing.Size(86, 20);
             this.textBox6.TabIndex = 12;
             // 
+            // BoxCountElem
+            // 
+            this.BoxCountElem.Location = new System.Drawing.Point(457, 24);
+            this.BoxCountElem.Name = "BoxCountElem";
+            this.BoxCountElem.Size = new System.Drawing.Size(46, 20);
+            this.BoxCountElem.TabIndex = 13;
+            // 
+            // IncrementElem
+            // 
+            this.IncrementElem.Location = new System.Drawing.Point(509, 23);
+            this.IncrementElem.Name = "IncrementElem";
+            this.IncrementElem.Size = new System.Drawing.Size(31, 23);
+            this.IncrementElem.TabIndex = 14;
+            this.IncrementElem.Text = "+";
+            this.IncrementElem.UseVisualStyleBackColor = true;
+            this.IncrementElem.Click += new System.EventHandler(this.IncrementElem_Click);
+            // 
+            // DecrementElem
+            // 
+            this.DecrementElem.Location = new System.Drawing.Point(420, 23);
+            this.DecrementElem.Name = "DecrementElem";
+            this.DecrementElem.Size = new System.Drawing.Size(31, 23);
+            this.DecrementElem.TabIndex = 15;
+            this.DecrementElem.Text = "-";
+            this.DecrementElem.UseVisualStyleBackColor = true;
+            this.DecrementElem.Click += new System.EventHandler(this.DecrementElem_Click);
+            // 
             // myScroll
             // 
             this.myScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -164,6 +194,9 @@ namespace HexDump
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(600, 366);
+            this.Controls.Add(this.DecrementElem);
+            this.Controls.Add(this.IncrementElem);
+            this.Controls.Add(this.BoxCountElem);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.label2);
@@ -199,6 +232,9 @@ namespace HexDump
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox BoxCountElem;
+        private System.Windows.Forms.Button IncrementElem;
+        private System.Windows.Forms.Button DecrementElem;
     }
 }
 
