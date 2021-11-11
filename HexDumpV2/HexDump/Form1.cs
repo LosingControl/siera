@@ -31,8 +31,8 @@ namespace HexDump
         readonly StringBuilder m_StrBldForm = new StringBuilder();
 
         /*const int reserveLimit = 20;
-        const int ByteInLine = 16;
-        int count_strings_in_MainHexBox;*/
+        const int ByteInLine = 16;*/
+        int count_strings_in_MainHexBox;
         string[] allArrByte;
         int CountElem = 0;
         int m_CountClickOnScroll = 0;
@@ -43,7 +43,7 @@ namespace HexDump
             InitializeComponent();
             textBox3.Text = MainHexBox.Height.ToString();
             BoxCountElem.Text = CountElem.ToString();   
-            //count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
+            count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
         }
 
         private void Search_Click(object sender, EventArgs e)
@@ -69,14 +69,14 @@ namespace HexDump
 
         private void PrintHex()
         {
-            MainHexBox.Clear();
-
             allArrByte = hex.GetHexDump(myScroll.ValueString, PathBox.Text, myScroll.MarkerReserve);
 
-            for (int i = myScroll.ValueString; i < allArrByte.Length; i++)
+            MainHexBox.Clear();
+
+            int j = 0;
+            for (int i = myScroll.ValueString; j < count_strings_in_MainHexBox && i < allArrByte.Length; j++)
             {
-                m_StrBldForm.Append(allArrByte[i]);
-                //MainHexBox.AppendText(allArrByte[i]);
+                m_StrBldForm.Append(allArrByte[i++]);
             }
 
             MainHexBox.Text = m_StrBldForm.ToString();
@@ -86,6 +86,7 @@ namespace HexDump
 
         private void MyScroll_Scroll(object sender, ScrollEventArgs e)
         {
+            
             PrintHex();
 
             m_CountClickOnScroll++;

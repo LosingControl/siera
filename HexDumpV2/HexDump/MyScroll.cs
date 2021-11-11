@@ -59,8 +59,8 @@ namespace HexDump
         {
             using (var fileStream = File.OpenRead(path))
             {
-                Maximum = (int)Math.Ceiling((decimal)(fileStream.Length / 16));
-                Maximum = (int)Math.Round((decimal)Maximum / CoefficientStrings);
+                Maximum = (int)(fileStream.Length / 16);
+                Maximum = Maximum / CoefficientStrings;
                 Maximum -= LargeChange - 1;
                 m_ValueStringMax = Maximum * CoefficientStrings + LargeChange - 1;
             }
@@ -68,6 +68,7 @@ namespace HexDump
 
         protected override void OnScroll(ScrollEventArgs se)
         {
+            //Debug.WriteLine("se.NewValue = {0}" + '\n', se.NewValue);
             switch (se.Type)
             {
                 case ScrollEventType.SmallDecrement:
@@ -79,19 +80,20 @@ namespace HexDump
                     break;
 
                 case ScrollEventType.LargeDecrement:
-                    OnLargeDecrement();
+                    OnLargeDecrement(se);
                     break;
 
                 case ScrollEventType.LargeIncrement:
-                    OnLargeIncrement();
+                    OnLargeIncrement(se);
                     break;
 
                 case ScrollEventType.ThumbPosition:
-                    //Скролит после остановки Thumb. Ползунок полосы прокрутки переместился.
                     Debug.WriteLine("Down Arrow Captured");
                     break;
+
                 case ScrollEventType.ThumbTrack:
-                    //Ползунок полосы прокрутки перемещается в данный момент.
+
+                    //Debug.WriteLine("ThumbTrack se.NewValue = {0}" + '\n', se.NewValue);
                     OnThumbTrack(se);
                     break;
 
@@ -112,7 +114,8 @@ namespace HexDump
                 default:
                     break;
             }
-            se.NewValue = m_ScrollPos;
+            /*Debug.WriteLine("Value OnScroll = {0}",Value);
+            Debug.WriteLine("m_ScrollPos OnScroll = {0}", m_ScrollPos);*/
             base.OnScroll(se);
         }
 
@@ -124,6 +127,7 @@ namespace HexDump
         private void OnFirst()
         {
             m_ScrollPos = Minimum;
+            Value = m_ScrollPos;
             m_ValueString = Minimum;
             m_MarkerReserve = Minimum;
         }
@@ -131,40 +135,37 @@ namespace HexDump
         private void OnLast()
         {
             m_ScrollPos = Maximum;
+            Value = m_ScrollPos;
             m_ValueString = m_ValueStringMax;
             m_MarkerReserve = m_ValueStringMax;
         }
 
         private void OnThumbTrack(ScrollEventArgs se)
         {
-            //переделать , проблемы с использованием smallIncremet и скролла без фокуса
-            if (se.NewValue > se.OldValue /*&& m_ScrollPos < Maximum*/)
+            if (se.NewValue > se.OldValue)
             {
                 OnSmallIncrement();
-                /*m_ScrollPos++;
-                m_ValueString += CoefficientStrings;
-                m_MarkerReserve += CoefficientStrings;*/
             }
-            else if (se.NewValue < se.OldValue /*&& m_ScrollPos > Minimum*/)
+            else if (se.NewValue < se.OldValue)
             {
                 OnSmallDecrement();
-                /*m_ScrollPos--;
-                m_ValueString -= CoefficientStrings;
-                m_MarkerReserve -= CoefficientStrings;*/
             }
             else
             {
                 Debug.WriteLine("stay");
             }
+            //Debug.WriteLine(" OnThumbTrack se.NewValue = {0}" + '\n', se.NewValue);
         }
 
-        private void OnLargeIncrement()
+        private void OnLargeIncrement(ScrollEventArgs se)
         {
             m_IncrementClick++;
 
             if (m_ValueString < m_ValueStringMax && m_ScrollPos < Maximum)
             {
                 m_ScrollPos++;
+                se.NewValue = m_ScrollPos;
+                Value = se.NewValue;
                 m_ValueString += CoefficientStrings;
                 m_MarkerReserve += CoefficientStrings;
             }
@@ -174,13 +175,16 @@ namespace HexDump
             }
         }
 
-        private void OnLargeDecrement()
+        private void OnLargeDecrement(ScrollEventArgs se)
         {
             m_DecrementClick++;
 
             if (m_ValueString > 0 && m_ScrollPos > 0)
             {
                 m_ScrollPos--;
+                //??
+                se.NewValue = m_ScrollPos;
+                Value = se.NewValue;
                 m_ValueString -= CoefficientStrings;
                 m_MarkerReserve -= CoefficientStrings;
             }
@@ -204,8 +208,11 @@ namespace HexDump
             if (m_ScrollPos < Maximum && (m_IncrementClick >= CoefficientStrings))
             {
                 m_ScrollPos++;
+                Value = m_ScrollPos;
                 m_IncrementClick = 0;
             }
+            //Debug.WriteLine("OnSmall Increm Value = {0}", Value);
+            //Debug.WriteLine("m_ScrollPos  Increm = {0}", m_ScrollPos);
         }
 
         private void OnSmallDecrement()
@@ -222,8 +229,11 @@ namespace HexDump
             if (m_ScrollPos > 0 && (m_DecrementClick >= CoefficientStrings))
             {
                 m_ScrollPos--;
+                Value = m_ScrollPos;
                 m_DecrementClick = 0;
             }
+            /*Debug.WriteLine("OnSmall Decreme Value = {0}", Value);
+            Debug.WriteLine("m_ScrollPos Decreme = {0}", m_ScrollPos);*/
         }
     }
 }

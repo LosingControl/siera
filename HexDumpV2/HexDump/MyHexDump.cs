@@ -35,14 +35,14 @@ namespace HexDump
             if (readingPoint)
             {
                 readingPoint = false;
-                SetSizeArray(ref path);
-                GetStringsByte(ref scroll_value, ref x, ref path);
+                SetSizeArray(path);
+                GetStringsByte(scroll_value, ref x, path);
             }
 
             return arrByte;
         }
 
-        private void SetSizeArray(ref string path)
+        private void SetSizeArray(string path)
         {
             using (var fileStream = File.OpenRead(path))
             {
@@ -57,7 +57,7 @@ namespace HexDump
             }
         }
 
-        private void GetStringsByte(ref int scroll_value, ref int x, ref string path)
+        private void GetStringsByte(int scroll_value, ref int x, string path)
         {
             using (var fileStream = File.OpenRead(path))
             {
