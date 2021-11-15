@@ -183,10 +183,10 @@ namespace HexDump
             this.myScroll.Location = new System.Drawing.Point(482, 67);
             this.myScroll.MarkerReserve = 0;
             this.myScroll.Name = "myScroll";
+            this.myScroll.PosString = 0;
             this.myScroll.ScrollPos = 0;
             this.myScroll.Size = new System.Drawing.Size(21, 271);
             this.myScroll.TabIndex = 7;
-            this.myScroll.ValueString = 0;
             this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
             // 
             // Form1

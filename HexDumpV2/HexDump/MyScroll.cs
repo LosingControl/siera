@@ -7,15 +7,15 @@ namespace HexDump
 {
     public class MyScroll : VScrollBar
     {
-        const int CoefficientStrings = 3;
-
+        const int CoefficientStrings = 1;
+        int limit = MyHexDump.LimitStock;
         int m_ScrollPos = 0;
         int m_IncrementClick = 0;
         int m_DecrementClick = 0;
         int m_MarkerReserve = 0;
-        int m_ValueString = 0;
+        int m_PosString = 0;
         int m_ValueStringMax = 0;
-
+        int ost;
 
         public int GetCoefficientStrings
         {
@@ -34,10 +34,10 @@ namespace HexDump
             set { m_ScrollPos = value; }
         }
 
-        public int ValueString
+        public int PosString
         {
-            get { return m_ValueString; }
-            set { m_ValueString = value; }
+            get { return m_PosString; }
+            set { m_PosString = value; }
         }
 
         public int ValueStringMax { get => m_ValueStringMax; private set => m_ValueStringMax = value; }
@@ -50,72 +50,61 @@ namespace HexDump
             Maximum = 0;
             Minimum = 0;
             m_ScrollPos = 0;
-            m_ValueString = 0;
+            m_PosString = 0;
             base.Value = 0;
             m_MarkerReserve = 0;
         }
 
         public void SetSettingScroll(string path)
         {
+            
             using (var fileStream = File.OpenRead(path))
             {
                 Maximum = (int)(fileStream.Length / 16);
                 Maximum = Maximum / CoefficientStrings;
-                Maximum -= LargeChange - 1;
-                m_ValueStringMax = Maximum * CoefficientStrings + LargeChange - 1;
+                Maximum -= LargeChange;
+                //Maximum = Maximum * CoefficientStrings;
+                m_ValueStringMax = Maximum - (LargeChange - 1);
+                
             }
         }
 
         protected override void OnScroll(ScrollEventArgs se)
         {
-            //Debug.WriteLine("se.NewValue = {0}" + '\n', se.NewValue);
-            switch (se.Type)
+            if (se.NewValue > se.OldValue)
             {
-                case ScrollEventType.SmallDecrement:
-                    OnSmallDecrement();
-                    break;
+;               if (m_PosString < m_ValueStringMax)
+                {
+                    m_PosString = se.NewValue;
 
-                case ScrollEventType.SmallIncrement:
-                    OnSmallIncrement();
-                    break;
+                    base.Value = m_PosString / CoefficientStrings;
 
-                case ScrollEventType.LargeDecrement:
-                    OnLargeDecrement(se);
-                    break;
+                    ost = Math.Abs(se.OldValue - se.NewValue);
 
-                case ScrollEventType.LargeIncrement:
-                    OnLargeIncrement(se);
-                    break;
+                    m_MarkerReserve += ost;
 
-                case ScrollEventType.ThumbPosition:
-                    Debug.WriteLine("Down Arrow Captured");
-                    break;
-
-                case ScrollEventType.ThumbTrack:
-
-                    //Debug.WriteLine("ThumbTrack se.NewValue = {0}" + '\n', se.NewValue);
-                    OnThumbTrack(se);
-                    break;
-
-                case ScrollEventType.First:
-                    OnFirst();
-                    //markerReserve = ValueString;
-                    break;
-
-                case ScrollEventType.Last:
-                    OnLast();
-                    //markerReserve = ValueString;
-                    break;
-
-                case ScrollEventType.EndScroll:
-                    
-                    break;
-
-                default:
-                    break;
+                    se.NewValue = base.Value;
+                }               
             }
-            /*Debug.WriteLine("Value OnScroll = {0}",Value);
-            Debug.WriteLine("m_ScrollPos OnScroll = {0}", m_ScrollPos);*/
+            else if (se.NewValue < se.OldValue)
+            {
+
+                if (m_PosString > Minimum)
+                {
+                    m_PosString = se.NewValue;
+
+                    base.Value = m_PosString / CoefficientStrings;
+
+                    //m_ScrollPos = se.NewValue * CoefficientStrings + (int)Math.Ceiling(m_PosString % (decimal)CoefficientStrings);
+
+                    ost = Math.Abs(se.OldValue - se.NewValue);
+
+                    m_MarkerReserve -= ost;
+
+                    se.NewValue = base.Value;
+                }
+            }
+
             base.OnScroll(se);
         }
 
@@ -124,116 +113,5 @@ namespace HexDump
             OnScroll(se);
         }
 
-        private void OnFirst()
-        {
-            m_ScrollPos = Minimum;
-            Value = m_ScrollPos;
-            m_ValueString = Minimum;
-            m_MarkerReserve = Minimum;
-        }
-
-        private void OnLast()
-        {
-            m_ScrollPos = Maximum;
-            Value = m_ScrollPos;
-            m_ValueString = m_ValueStringMax;
-            m_MarkerReserve = m_ValueStringMax;
-        }
-
-        private void OnThumbTrack(ScrollEventArgs se)
-        {
-            if (se.NewValue > se.OldValue)
-            {
-                OnSmallIncrement();
-            }
-            else if (se.NewValue < se.OldValue)
-            {
-                OnSmallDecrement();
-            }
-            else
-            {
-                Debug.WriteLine("stay");
-            }
-            //Debug.WriteLine(" OnThumbTrack se.NewValue = {0}" + '\n', se.NewValue);
-        }
-
-        private void OnLargeIncrement(ScrollEventArgs se)
-        {
-            m_IncrementClick++;
-
-            if (m_ValueString < m_ValueStringMax && m_ScrollPos < Maximum)
-            {
-                m_ScrollPos++;
-                se.NewValue = m_ScrollPos;
-                Value = se.NewValue;
-                m_ValueString += CoefficientStrings;
-                m_MarkerReserve += CoefficientStrings;
-            }
-            if (m_IncrementClick > CoefficientStrings)
-            {
-                m_IncrementClick = 0;
-            }
-        }
-
-        private void OnLargeDecrement(ScrollEventArgs se)
-        {
-            m_DecrementClick++;
-
-            if (m_ValueString > 0 && m_ScrollPos > 0)
-            {
-                m_ScrollPos--;
-                //??
-                se.NewValue = m_ScrollPos;
-                Value = se.NewValue;
-                m_ValueString -= CoefficientStrings;
-                m_MarkerReserve -= CoefficientStrings;
-            }
-            if (m_DecrementClick > CoefficientStrings)
-            {
-                m_DecrementClick = 0;
-            }
-        }
-
-        private void OnSmallIncrement()
-        {
-            m_IncrementClick++;
-
-            m_DecrementClick = 0;
-
-            if (m_ValueString < m_ValueStringMax)
-            {
-                m_ValueString++;
-                m_MarkerReserve++;
-            }
-            if (m_ScrollPos < Maximum && (m_IncrementClick >= CoefficientStrings))
-            {
-                m_ScrollPos++;
-                Value = m_ScrollPos;
-                m_IncrementClick = 0;
-            }
-            //Debug.WriteLine("OnSmall Increm Value = {0}", Value);
-            //Debug.WriteLine("m_ScrollPos  Increm = {0}", m_ScrollPos);
-        }
-
-        private void OnSmallDecrement()
-        {
-            m_DecrementClick++;
-
-            m_IncrementClick = 0;
-
-            if (m_ValueString > 0)
-            {
-                m_ValueString--;
-                m_MarkerReserve--;
-            }
-            if (m_ScrollPos > 0 && (m_DecrementClick >= CoefficientStrings))
-            {
-                m_ScrollPos--;
-                Value = m_ScrollPos;
-                m_DecrementClick = 0;
-            }
-            /*Debug.WriteLine("OnSmall Decreme Value = {0}", Value);
-            Debug.WriteLine("m_ScrollPos Decreme = {0}", m_ScrollPos);*/
-        }
     }
 }

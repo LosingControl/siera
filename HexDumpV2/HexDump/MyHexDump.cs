@@ -11,7 +11,7 @@ namespace HexDump
     {
         const int ByteInLine = 16;
         const int MaximumReadBytes = 4194304;
-        const int LimitStock = MaximumReadBytes / ByteInLine;
+        public const int LimitStock = MaximumReadBytes / ByteInLine;
 
         readonly StringBuilder m_StrBldHexDump = new StringBuilder();
 
@@ -23,11 +23,10 @@ namespace HexDump
         public MyHexDump()
         { }
 
-        public string[] GetHexDump(int scroll_value, string path, int markerReserve)
+        public string[] GetHexDump(int scroll_value, string path, bool markerReserve)
         {
-            int x = 0;
 
-            if (markerReserve == LimitStock)
+            if (markerReserve)
             {
                 readingPoint = true;
             }
@@ -36,7 +35,7 @@ namespace HexDump
             {
                 readingPoint = false;
                 SetSizeArray(path);
-                GetStringsByte(scroll_value, ref x, path);
+                GetStringsByte(scroll_value, path);
             }
 
             return arrByte;
@@ -57,8 +56,9 @@ namespace HexDump
             }
         }
 
-        private void GetStringsByte(int scroll_value, ref int x, string path)
+        private void GetStringsByte(int scroll_value, string path)
         {
+            int newLine = 0;
             using (var fileStream = File.OpenRead(path))
             {
                 using (BinaryReader binaryReader = new BinaryReader(fileStream))
@@ -79,7 +79,7 @@ namespace HexDump
 
                                 if (i == 0)
                                 {
-                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");//смещение модет быть и в Х16
+                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");
                                 }
 
                                 m_StrBldHexDump.Append(' ' + stringFromFile[i].ToString("X2"));
@@ -87,9 +87,9 @@ namespace HexDump
 
                             m_StrBldHexDump.AppendLine();
 
-                            arrByte[x] = m_StrBldHexDump.ToString();
+                            arrByte[newLine] = m_StrBldHexDump.ToString();
 
-                            x++;
+                            newLine++;
 
                             m_StrBldHexDump.Clear();
                         }
