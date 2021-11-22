@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+
 
 namespace HexDump
 {
@@ -25,7 +18,8 @@ namespace HexDump
         int count_strings_in_MainHexBox;
         string[] allArrByte;
         int CountElem = 0;
-       
+        bool printing = true;
+
 
         public Form1()
         {
@@ -43,7 +37,6 @@ namespace HexDump
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-
                 MainHexBox.Clear();
 
                 PathBox.Clear();
@@ -55,13 +48,11 @@ namespace HexDump
                 allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll);
 
                 PrintHex();
-
             }
         }
 
         private void PrintHex()
         {
-            //printingString = myScroll.Value;
             CheckingForRereadingArray();
 
             MainHexBox.Clear();
@@ -102,8 +93,12 @@ namespace HexDump
 
         private void MyScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            
-            PrintHex();
+            if (printing || e.NewValue < myScroll.Maximum)
+            {
+                PrintHex();
+            }
+
+            printing = e.NewValue == myScroll.Maximum ? false : true;
 
             textBox1.Text = myScroll.Maximum.ToString();
             textBox2.Text = myScroll.PosString.ToString();

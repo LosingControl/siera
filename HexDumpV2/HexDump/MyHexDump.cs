@@ -22,6 +22,7 @@ namespace HexDump
         string[] arrByte;
         
         public long StockBottom { get => stockBottom; set => stockBottom = value; }
+
         public long StockTop { get => stockTop; set => stockTop = value; }
 
         public int GetLimitStock { get => LimitStock;}
@@ -120,7 +121,6 @@ namespace HexDump
 
                     arrByte = new string[size];
                 }
-
             }
 
             return scroll_value;

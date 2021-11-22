@@ -180,12 +180,13 @@ namespace HexDump
             // 
             this.myScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.myScroll.Location = new System.Drawing.Point(482, 67);
+            this.myScroll.Location = new System.Drawing.Point(447, 67);
             this.myScroll.MarkerReserve = ((long)(0));
             this.myScroll.Name = "myScroll";
             this.myScroll.PosString = ((long)(0));
             this.myScroll.Size = new System.Drawing.Size(21, 271);
             this.myScroll.TabIndex = 7;
+            this.myScroll.Visible = false;
             this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
             // 
             // Form1

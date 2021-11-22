@@ -47,6 +47,7 @@ namespace HexDump
             m_Step = 0;
             base.Value = 0;
             m_MarkerReserve = 0;
+            Visible = false;
         }
 
         public void SetSettingScroll(string path)
@@ -59,9 +60,15 @@ namespace HexDump
                 {
                     m_CoefficientStrings = (int)Math.Ceiling((decimal)fileStream.Length / Int32.MaxValue);
                 }
-                Maximum = ((int)Math.Ceiling(fileStream.Length / (decimal)16)) / m_CoefficientStrings;
-                LargeChange = 1;
-                Maximum -= m_countStringsInMainHexBox;
+                
+                if (fileStream.Length > m_countStringsInMainHexBox)
+                {
+                    Visible = true;
+                    Maximum = ((int)Math.Ceiling(fileStream.Length / (decimal)16)) / m_CoefficientStrings;
+                    LargeChange = 1;
+                    Maximum -= m_countStringsInMainHexBox;
+                }
+                
             }
         }
 
@@ -87,7 +94,7 @@ namespace HexDump
                     m_PosString = se.NewValue;
                 }
 
-                if (m_MarkerReserve < Maximum && Value < Maximum)
+                if (m_MarkerReserve < Maximum && Value <= Maximum)
                 {
                     m_MarkerReserve += DifferenceNewOldMeaning;
                 }
@@ -146,7 +153,7 @@ namespace HexDump
                  }*/
 
             }
-            
+
             se.NewValue = base.Value;
             base.OnScroll(se);
         }
