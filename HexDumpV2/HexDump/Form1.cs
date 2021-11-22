@@ -17,45 +17,32 @@ namespace HexDump
     {
         const int WmKeyDown = 0x100;
         const int WmSysKeyDown = 0x0104;
-        const int WmPageDown = 0x22;
-        const int WmPageUp = 0x21;
-        const int WmEnd = 0x23;
-        const int WmHome = 0x24;
-        const int WmUp = 0x26;
-        const int WmDown = 0x28;
-        const int WmVScroll = 0x115;
         const int WmMouseWheel = 0x020A;
 
         readonly OpenFileDialog openFileDialog = new OpenFileDialog();
         readonly MyHexDump hex = new MyHexDump { };
-        readonly StringBuilder m_StrBldForm = new StringBuilder();
 
-        /*const int reserveLimit = 20;
-        const int ByteInLine = 16;*/
         int count_strings_in_MainHexBox;
         string[] allArrByte;
         int CountElem = 0;
-        int printingString;
-        bool reading = true;
-        
-        
-        
-
+       
 
         public Form1()
         {
             InitializeComponent();
             textBox3.Text = MainHexBox.Height.ToString();
+
             BoxCountElem.Text = CountElem.ToString();   
+
             count_strings_in_MainHexBox = (MainHexBox.Height / MainHexBox.Font.Height);
+
+            myScroll.CountStringsInMainHexBox = count_strings_in_MainHexBox;
         }
 
         private void Search_Click(object sender, EventArgs e)
         {
-            
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                hex.RereadPointer = true;
 
                 MainHexBox.Clear();
 
@@ -65,40 +52,52 @@ namespace HexDump
                 myScroll.ResetSettings();
                 myScroll.SetSettingScroll(PathBox.Text);
 
-                //allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll.MarkerReserve);
+                allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll);
 
                 PrintHex();
-                reading = false;
+
             }
         }
 
         private void PrintHex()
         {
-            printingString = myScroll.Value;
-
-            if (myScroll.MarkerReserve == MyHexDump.LimitStock)
-            {
-                printingString = 0;
-                reading = true;
-                myScroll.MarkerReserve = 0;
-
-            }
-
-
-            allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, reading);
-            reading = false;
+            //printingString = myScroll.Value;
+            CheckingForRereadingArray();
 
             MainHexBox.Clear();
-             
+
             int j = 0;
-            for (int i = printingString; j < count_strings_in_MainHexBox && i < allArrByte.Length; j++)
+            for (long i = myScroll.MarkerReserve; j < count_strings_in_MainHexBox && i < allArrByte.Length; j++)
             {
-                m_StrBldForm.Append(allArrByte[i++]);
+                MainHexBox.Text += allArrByte[i++];
             }
 
-            MainHexBox.Text = m_StrBldForm.ToString();
+            textBox5.Text = myScroll.Value.ToString();
+        }
 
-            m_StrBldForm.Clear();
+        private void CheckingForRereadingArray()
+        {
+            if (myScroll.PosString > hex.StockBottom || (myScroll.PosString < hex.StockTop))
+            {
+                
+                allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll);
+                Debug.WriteLine(hex.StockTop + "верх.г");
+                Debug.WriteLine(myScroll.PosString);
+                Debug.WriteLine(hex.StockBottom + "низ.г");
+
+                if (myScroll.PosString == myScroll.Minimum)
+                {
+                    myScroll.MarkerReserve = 0;
+                }
+                else if (myScroll.PosString == myScroll.Maximum)
+                {
+                    myScroll.MarkerReserve = hex.GetLimitStock / 2;
+                }
+                else
+                {
+                    myScroll.MarkerReserve = allArrByte.Length / 2;
+                }
+            }
         }
 
         private void MyScroll_Scroll(object sender, ScrollEventArgs e)
@@ -110,6 +109,7 @@ namespace HexDump
             textBox2.Text = myScroll.PosString.ToString();
             textBox6.Text = myScroll.Value.ToString();
             textBox4.Text = myScroll.MarkerReserve.ToString();
+           
         }
 
         internal static class NativeMethods
@@ -146,11 +146,11 @@ namespace HexDump
 
                 if (zDelta > 0)
                 {
-                    se =  new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.PosString, myScroll.PosString - 1, ScrollOrientation.VerticalScroll);
+                    se =  new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.Value, myScroll.Value - 1, ScrollOrientation.VerticalScroll);
                 }
                 else
                 {
-                    se = new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.PosString, myScroll.PosString + 1, ScrollOrientation.VerticalScroll);
+                    se = new ScrollEventArgs(ScrollEventType.ThumbTrack, myScroll.Value, myScroll.Value + 1, ScrollOrientation.VerticalScroll);
                 }
                 myScroll.OnPressingControlButton(se);
             }
@@ -164,38 +164,38 @@ namespace HexDump
                 {
                     case Keys.Down:                 
                         Debug.WriteLine("Down Arrow Captured");
-                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.SmallIncrement, myScroll.PosString, 
-                            myScroll.PosString + 1, ScrollOrientation.VerticalScroll));
+                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.SmallIncrement,
+                            myScroll.Value, myScroll.Value + 1, ScrollOrientation.VerticalScroll));
                         return true;
 
                     case Keys.Up:
                         Debug.WriteLine("Up Arrow Captured");
-                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.SmallDecrement, myScroll.PosString, 
-                            myScroll.PosString - 1, ScrollOrientation.VerticalScroll));
+                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.SmallDecrement,
+                            myScroll.Value, myScroll.Value - 1, ScrollOrientation.VerticalScroll));
                         return true;
 
                     case Keys.PageDown:
                         Debug.WriteLine("PageDown Arrow Captured");
-                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.LargeIncrement, myScroll.PosString, 
-                            myScroll.PosString + 3, ScrollOrientation.VerticalScroll));
+                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.LargeIncrement,
+                            myScroll.Value, myScroll.Value + 3, ScrollOrientation.VerticalScroll));
                         return true;
 
                     case Keys.PageUp:
                         Debug.WriteLine("PageUp Arrow Captured");
-                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.LargeDecrement, myScroll.PosString, 
-                            myScroll.PosString - 3, ScrollOrientation.VerticalScroll));
+                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.LargeDecrement,
+                            myScroll.Value, myScroll.Value - 3, ScrollOrientation.VerticalScroll));
                         return true;
 
                     case Keys.Home:
                         Debug.WriteLine("Home Arrow Captured");
-                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.First, 1, myScroll.Minimum, 
-                            ScrollOrientation.VerticalScroll));
+                        myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.First,
+                            myScroll.Value, myScroll.Minimum, ScrollOrientation.VerticalScroll));
                         return true;
 
                     case Keys.End:
                         Debug.WriteLine("End Arrow Captured");
                         myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.Last, 
-                            myScroll.Maximum - (myScroll.LargeChange - 1), ScrollOrientation.VerticalScroll));
+                            myScroll.Value, myScroll.Maximum, ScrollOrientation.VerticalScroll));
                         return true;
                 }
             }

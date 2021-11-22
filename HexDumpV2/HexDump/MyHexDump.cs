@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,56 +12,41 @@ namespace HexDump
     {
         const int ByteInLine = 16;
         const int MaximumReadBytes = 4194304;
-        public const int LimitStock = MaximumReadBytes / ByteInLine;
+        const int LimitStock = MaximumReadBytes / ByteInLine;
 
+        long stockBottom = 0;
+        long stockTop = 0;
+        
         readonly StringBuilder m_StrBldHexDump = new StringBuilder();
 
         string[] arrByte;
-        bool readingPoint;
         
-        public bool RereadPointer { get => readingPoint; set => readingPoint = value; }
+        public long StockBottom { get => stockBottom; set => stockBottom = value; }
+        public long StockTop { get => stockTop; set => stockTop = value; }
+
+        public int GetLimitStock { get => LimitStock;}
 
         public MyHexDump()
         { }
 
-        public string[] GetHexDump(int scroll_value, string path, bool markerReserve)
+        public string[] GetHexDump(long scroll_value, string path, MyScroll scroll)
         {
+            stockBottom = scroll_value + LimitStock / 2;
+            stockTop = scroll_value - LimitStock / 2;
 
-            if (markerReserve)
-            {
-                readingPoint = true;
-            }
-
-            if (readingPoint)
-            {
-                readingPoint = false;
-                SetSizeArray(path);
-                GetStringsByte(scroll_value, path);
-            }
-
+            GetStringsByte(scroll_value, path, scroll);
+         
             return arrByte;
         }
 
-        private void SetSizeArray(string path)
-        {
-            using (var fileStream = File.OpenRead(path))
-            {
-                if (fileStream.Length < MaximumReadBytes)
-                {
-                    arrByte = new string[fileStream.Length / ByteInLine + 1];
-                }
-                else
-                {
-                    arrByte = new string[MaximumReadBytes / ByteInLine + 1];
-                }
-            }
-        }
 
-        private void GetStringsByte(int scroll_value, string path)
+        private void GetStringsByte(long scroll_value, string path , MyScroll scroll)
         {
             int newLine = 0;
             using (var fileStream = File.OpenRead(path))
             {
+                scroll_value = SetSizeArray(scroll_value, fileStream, scroll);
+
                 using (BinaryReader binaryReader = new BinaryReader(fileStream))
                 {
                     if (fileStream.Length > 0)
@@ -71,21 +57,16 @@ namespace HexDump
 
                         for (int line = 0; line < arrByte.Length; line++)
                         {
-                            int output_offset = scroll_value++ * ByteInLine;
+                            long output_offset = scroll_value++ * ByteInLine;
+
                             stringFromFile = binaryReader.ReadBytes((int)stringFromFile.Length);
 
-                            for (int i = 0; i < stringFromFile.Length; i++)
+                            FillingStringBytes(stringFromFile, output_offset);
+
+                            if (stringFromFile.Length != 0)
                             {
-
-                                if (i == 0)
-                                {
-                                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");
-                                }
-
-                                m_StrBldHexDump.Append(' ' + stringFromFile[i].ToString("X2"));
+                                m_StrBldHexDump.AppendLine();
                             }
-
-                            m_StrBldHexDump.AppendLine();
 
                             arrByte[newLine] = m_StrBldHexDump.ToString();
 
@@ -96,6 +77,53 @@ namespace HexDump
                     }
                 }
             }
+        }
+
+        private void FillingStringBytes(byte[] stringFromFile, long output_offset)
+        {
+            for (int i = 0; i < stringFromFile.Length; i++)
+            {
+
+                if (i == 0)
+                {
+                    m_StrBldHexDump.Append(output_offset.ToString("X8") + ": ");
+                }
+
+                m_StrBldHexDump.Append(' ' + stringFromFile[i].ToString("X2"));
+            }
+        }
+
+        private long SetSizeArray(long scroll_value, FileStream fileStream, MyScroll scroll)
+        {
+            long size;
+
+            if (fileStream.Length < MaximumReadBytes)
+            {
+                size = fileStream.Length / ByteInLine + 1;
+                arrByte = new string[size];
+            }
+            else
+            {
+                if (scroll_value == 0)
+                {
+                    size = LimitStock + 1;
+                    arrByte = new string[size];
+                }
+                else
+                {
+                    size = LimitStock + LimitStock + 1;
+
+                    if (scroll_value == scroll.Maximum)
+                    {
+                        scroll_value -= LimitStock / 2;
+                    }
+
+                    arrByte = new string[size];
+                }
+
+            }
+
+            return scroll_value;
         }
     }
 }

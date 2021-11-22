@@ -7,40 +7,34 @@ namespace HexDump
 {
     public class MyScroll : VScrollBar
     {
-        const int CoefficientStrings = 1;
-        int limit = MyHexDump.LimitStock;
-        int m_ScrollPos = 0;
-        int m_IncrementClick = 0;
-        int m_DecrementClick = 0;
-        int m_MarkerReserve = 0;
-        int m_PosString = 0;
+        int m_CoefficientStrings = 1;
+        int m_countStringsInMainHexBox;
+        long m_MarkerReserve = 0;
+        long m_PosString = 0;
         int m_ValueStringMax = 0;
-        int ost;
+        long m_Step = 0;
+        double m_Residue;
 
         public int GetCoefficientStrings
         {
-            get => CoefficientStrings;
+            get => m_CoefficientStrings;
         }
 
-        public int MarkerReserve
+        public long MarkerReserve
         {
             get { return m_MarkerReserve; }
             set { m_MarkerReserve = value; }
         }
 
-        public int ScrollPos
-        {
-            get { return m_ScrollPos; }
-            set { m_ScrollPos = value; }
-        }
-
-        public int PosString
+        public long PosString
         {
             get { return m_PosString; }
             set { m_PosString = value; }
         }
 
         public int ValueStringMax { get => m_ValueStringMax; private set => m_ValueStringMax = value; }
+
+        public int CountStringsInMainHexBox { private get => m_countStringsInMainHexBox; set => m_countStringsInMainHexBox = value; }
 
         public MyScroll()
         { }
@@ -49,23 +43,25 @@ namespace HexDump
         {
             Maximum = 0;
             Minimum = 0;
-            m_ScrollPos = 0;
             m_PosString = 0;
+            m_Step = 0;
             base.Value = 0;
             m_MarkerReserve = 0;
         }
 
         public void SetSettingScroll(string path)
         {
-            
+            m_Residue = m_CoefficientStrings == 1 ? m_Residue = 0 : m_Residue = 1;
+
             using (var fileStream = File.OpenRead(path))
             {
-                Maximum = (int)(fileStream.Length / 16);
-                Maximum = Maximum / CoefficientStrings;
-                Maximum -= LargeChange;
-                //Maximum = Maximum * CoefficientStrings;
-                m_ValueStringMax = Maximum - (LargeChange - 1);
-                
+                if ((Math.Ceiling(fileStream.Length / (decimal)16) > Int32.MaxValue))
+                {
+                    m_CoefficientStrings = (int)Math.Ceiling((decimal)fileStream.Length / Int32.MaxValue);
+                }
+                Maximum = ((int)Math.Ceiling(fileStream.Length / (decimal)16)) / m_CoefficientStrings;
+                LargeChange = 1;
+                Maximum -= m_countStringsInMainHexBox;
             }
         }
 
@@ -73,38 +69,85 @@ namespace HexDump
         {
             if (se.NewValue > se.OldValue)
             {
-;               if (m_PosString < m_ValueStringMax)
+                long DifferenceNewOldMeaning = Math.Abs(se.OldValue - se.NewValue);
+
+                if (se.NewValue <= Maximum)
+                {
+                    m_Residue += DifferenceNewOldMeaning;
+
+                    m_Step += DifferenceNewOldMeaning;
+
+                    if (m_Step >= m_CoefficientStrings)
+                    {
+                        base.Value += (int)(m_Residue / m_CoefficientStrings);
+                        m_Residue %= m_CoefficientStrings;
+                        m_Step = 0;
+                    }
+
+                    m_PosString = se.NewValue;
+                }
+
+                if (m_MarkerReserve < Maximum)
+                {
+                    m_MarkerReserve += DifferenceNewOldMeaning;
+                }
+                /*if (se.NewValue <= Maximum)
                 {
                     m_PosString = se.NewValue;
 
-                    base.Value = m_PosString / CoefficientStrings;
+                    //ost = (int)Math.Ceiling(m_PosString % (decimal)CoefficientStrings);
 
-                    ost = Math.Abs(se.OldValue - se.NewValue);
+                    base.Value = se.NewValue / CoefficientStrings;
 
-                    m_MarkerReserve += ost;
+                    m_MarkerReserve += step;
 
                     se.NewValue = base.Value;
-                }               
+
+                }*/
+
             }
             else if (se.NewValue < se.OldValue)
             {
+                long DifferenceNewOldMeaning = Math.Abs(se.OldValue - se.NewValue);
 
-                if (m_PosString > Minimum)
+                if (se.NewValue >= Minimum)
                 {
+                    m_Residue += DifferenceNewOldMeaning;
+
+                    m_Step += DifferenceNewOldMeaning;
+
+                    if (m_Step >= m_CoefficientStrings)
+                    {
+                        base.Value -= (int)(m_Residue / m_CoefficientStrings);
+                        m_Residue %= m_CoefficientStrings;
+                        m_Step = 0;
+                    }
+
                     m_PosString = se.NewValue;
-
-                    base.Value = m_PosString / CoefficientStrings;
-
-                    //m_ScrollPos = se.NewValue * CoefficientStrings + (int)Math.Ceiling(m_PosString % (decimal)CoefficientStrings);
-
-                    ost = Math.Abs(se.OldValue - se.NewValue);
-
-                    m_MarkerReserve -= ost;
-
-                    se.NewValue = base.Value;
                 }
-            }
 
+                if (m_MarkerReserve > Minimum)
+                {
+                    m_MarkerReserve -= DifferenceNewOldMeaning;
+                }
+                
+                /* if (se.NewValue >= Minimum)
+                 {
+                     m_PosString = se.NewValue;
+
+                     base.Value = se.NewValue / CoefficientStrings;
+
+                     //ost = (int)Math.Ceiling(m_PosString % (decimal)CoefficientStrings);
+
+                     m_MarkerReserve -= step;
+
+                     se.NewValue = base.Value;
+
+                 }*/
+
+            }
+            
+            se.NewValue = base.Value;
             base.OnScroll(se);
         }
 

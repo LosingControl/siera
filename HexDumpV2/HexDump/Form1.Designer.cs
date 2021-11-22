@@ -118,20 +118,20 @@ namespace HexDump
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(534, 204);
+            this.label1.Location = new System.Drawing.Point(513, 204);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(48, 13);
+            this.label1.Size = new System.Drawing.Size(80, 13);
             this.label1.TabIndex = 9;
-            this.label1.Text = "MyValue";
+            this.label1.Text = "MarkerReserve";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(534, 304);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.Size = new System.Drawing.Size(52, 13);
             this.label2.TabIndex = 10;
-            this.label2.Text = "Value";
+            this.label2.Text = "PosString";
             // 
             // textBox5
             // 
@@ -181,10 +181,9 @@ namespace HexDump
             this.myScroll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.myScroll.Location = new System.Drawing.Point(482, 67);
-            this.myScroll.MarkerReserve = 0;
+            this.myScroll.MarkerReserve = ((long)(0));
             this.myScroll.Name = "myScroll";
-            this.myScroll.PosString = 0;
-            this.myScroll.ScrollPos = 0;
+            this.myScroll.PosString = ((long)(0));
             this.myScroll.Size = new System.Drawing.Size(21, 271);
             this.myScroll.TabIndex = 7;
             this.myScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MyScroll_Scroll);
