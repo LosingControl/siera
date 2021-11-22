@@ -81,9 +81,9 @@ namespace HexDump
             {
                 
                 allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll);
-                Debug.WriteLine(hex.StockTop + "верх.г");
+                /*Debug.WriteLine(hex.StockTop + "верх.г");
                 Debug.WriteLine(myScroll.PosString);
-                Debug.WriteLine(hex.StockBottom + "низ.г");
+                Debug.WriteLine(hex.StockBottom + "низ.г");*/
 
                 if (myScroll.PosString == myScroll.Minimum)
                 {

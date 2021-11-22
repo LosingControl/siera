@@ -87,7 +87,7 @@ namespace HexDump
                     m_PosString = se.NewValue;
                 }
 
-                if (m_MarkerReserve < Maximum)
+                if (m_MarkerReserve < Maximum && Value < Maximum)
                 {
                     m_MarkerReserve += DifferenceNewOldMeaning;
                 }

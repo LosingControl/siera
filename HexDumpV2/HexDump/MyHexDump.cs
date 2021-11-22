@@ -11,7 +11,7 @@ namespace HexDump
     class MyHexDump
     {
         const int ByteInLine = 16;
-        const int MaximumReadBytes = 4194304;
+        const int MaximumReadBytes = 4096;
         const int LimitStock = MaximumReadBytes / ByteInLine;
 
         long stockBottom = 0;
