@@ -14,18 +14,22 @@ namespace HexDump
         const int MaximumReadBytes = 4096;
         const int LimitStock = MaximumReadBytes / ByteInLine;
 
-        long stockBottom = 0;
+        long stockBottom;
         long stockTop = 0;
         
         readonly StringBuilder m_StrBldHexDump = new StringBuilder();
 
         string[] arrByte;
         
-        public long StockBottom { get => stockBottom; set => stockBottom = value; }
+        public long StockBottom 
+        { 
+            get => stockBottom; 
+            set => stockBottom = value; 
+        }
 
         public long StockTop { get => stockTop; set => stockTop = value; }
 
-        public int GetLimitStock { get => LimitStock;}
+        public int GetLimitStock => LimitStock;
 
         public MyHexDump()
         { }
@@ -101,28 +105,24 @@ namespace HexDump
             if (fileStream.Length < MaximumReadBytes)
             {
                 size = fileStream.Length / ByteInLine + 1;
-                arrByte = new string[size];
             }
             else
             {
                 if (scroll_value == 0)
                 {
                     size = LimitStock + 1;
-                    arrByte = new string[size];
                 }
                 else
                 {
                     size = LimitStock + LimitStock + 1;
-
-                    if (scroll_value == scroll.Maximum)
+                    scroll_value -= LimitStock / 2;
+                    /*if (scroll_value == scroll.Maximum)
                     {
                         scroll_value -= LimitStock / 2;
-                    }
-
-                    arrByte = new string[size];
+                    }*/
                 }
             }
-
+            arrByte = new string[size];
             return scroll_value;
         }
     }

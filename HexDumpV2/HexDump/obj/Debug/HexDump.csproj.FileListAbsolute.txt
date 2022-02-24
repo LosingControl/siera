@@ -18,3 +18,13 @@ D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.GenerateResource.
 D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.CoreCompileInputs.cache
 D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.exe
 D:\github_rep\siera\HexDumpV2\HexDump\obj\Debug\HexDump.pdb
+D:\Git_repo\siera\HexDumpV2\HexDump\bin\Debug\HexDump.exe.config
+D:\Git_repo\siera\HexDumpV2\HexDump\bin\Debug\HexDump.exe
+D:\Git_repo\siera\HexDumpV2\HexDump\bin\Debug\HexDump.pdb
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csprojAssemblyReference.cache
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.Form1.resources
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.Properties.Resources.resources
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.GenerateResource.cache
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.csproj.CoreCompileInputs.cache
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.exe
+D:\Git_repo\siera\HexDumpV2\HexDump\obj\Debug\HexDump.pdb

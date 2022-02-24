@@ -72,9 +72,6 @@ namespace HexDump
             {
                 
                 allArrByte = hex.GetHexDump(myScroll.PosString, PathBox.Text, myScroll);
-                /*Debug.WriteLine(hex.StockTop + "верх.г");
-                Debug.WriteLine(myScroll.PosString);
-                Debug.WriteLine(hex.StockBottom + "низ.г");*/
 
                 if (myScroll.PosString == myScroll.Minimum)
                 {
@@ -86,7 +83,7 @@ namespace HexDump
                 }
                 else
                 {
-                    myScroll.MarkerReserve = allArrByte.Length / 2;
+                    myScroll.MarkerReserve = (allArrByte.Length / 4);
                 }
             }
         }
@@ -188,6 +185,7 @@ namespace HexDump
                         return true;
 
                     case Keys.End:
+                    case Keys.Back:
                         Debug.WriteLine("End Arrow Captured");
                         myScroll.OnPressingControlButton(new ScrollEventArgs(ScrollEventType.Last, 
                             myScroll.Value, myScroll.Maximum, ScrollOrientation.VerticalScroll));
